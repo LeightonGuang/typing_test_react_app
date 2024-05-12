@@ -1,6 +1,6 @@
 import React from "react";
 
-const Word = (word: string) => {
+const Word = ({ word }: { word: string }) => {
   return <div>{word}</div>;
 };
 

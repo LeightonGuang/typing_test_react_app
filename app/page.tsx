@@ -1,4 +1,4 @@
-import Link from "next/link";
+import TypingArea from "@/components/TypingArea";
 
 export default function Home() {
   return (
@@ -6,6 +6,7 @@ export default function Home() {
       <div>
         <h1>Home</h1>
         <input type="text" className="outline" />
+        <TypingArea />
       </div>
     </main>
   );

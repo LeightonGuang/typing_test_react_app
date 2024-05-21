@@ -5,10 +5,16 @@ import { useState } from "react";
 import Word from "./Word";
 import { Special_Elite } from "next/font/google";
 import Char from "./Char";
+import { group } from "console";
 
 type TypingAreaType = () => JSX.Element;
 
 const TypingArea: TypingAreaType = () => {
+  type LetterType = {
+    char: string;
+    isCorrect: boolean;
+  };
+
   const wordList: string[] = [
     "the",
     "at",
@@ -112,18 +118,13 @@ const TypingArea: TypingAreaType = () => {
     "part",
   ];
 
-  // generate 3 lines of words
-
   const [key, setKey]: [string, any] = useState<string>("");
   const typingAreaRef: any = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState<boolean>(true);
   const [wordIndex, setwordIndex] = useState<number>(0);
 
-  const [generatedWordList, setGeneratedWordList]: [string[], any] = useState<
-    string[]
-  >([]);
-  const [displayWordList, setDisplayWordList]: [string[], any] =
-    useState<string[]>(generatedWordList);
+  const [generatedWordList, setGeneratedWordList] = useState<string[]>([]);
+  const [displayWordList, setDisplayWordList] = useState<LetterType[][]>([]);
 
   /**
    * / displayWordList: string[] = [
@@ -144,13 +145,23 @@ const TypingArea: TypingAreaType = () => {
     return newWordList;
   };
 
-  type GeneratedWordsToDisplayWordsType = () => void;
+  type ConvertWordsToDisplayWordsType = (words: string[]) => Object[][];
 
-  const generatedWordsToDisplayWords: GeneratedWordsToDisplayWordsType = () => {
-    generateWords().map((word: string) => {
+  // convert a list of words to a list of display words with <span> around every letter
+  const convertWordsToDisplayWords: ConvertWordsToDisplayWordsType = (
+    words: string[]
+  ) => {
+    console.log(words);
+    const groupedList: Object[][] = words.map((word: string) => {
       const splitedWord: string[] = word.split("");
-      splitedWord.map((char: string) => `<span>${char}</span>`);
+      const wrapedWord: Object[] = splitedWord.map((char: string) => ({
+        char: char,
+        isCorrect: null,
+      }));
+      return wrapedWord;
     });
+    console.log(groupedList);
+    return groupedList;
   };
 
   const checkDivFocus: any = () => {
@@ -182,21 +193,21 @@ const TypingArea: TypingAreaType = () => {
         )
           break;
 
-        if (true) {
-          setDisplayWordList([
-            ...displayWordList,
-            <span className="text-correct">{event.key}</span>,
-          ]);
-          setwordIndex(wordIndex + 1);
-          console.log(displayWordList);
-        } else if (false) {
-          setDisplayWordList([
-            ...displayWordList,
-            <span className="text-wrong">{event.key}</span>,
-          ]);
-          setwordIndex(wordIndex + 1);
-          console.log(displayWordList);
-        }
+        // if (true) {
+        //   setDisplayWordList([
+        //     ...displayWordList,
+        //     <span className="text-correct">{event.key}</span>,
+        //   ]);
+        //   setwordIndex(wordIndex + 1);
+        //   console.log(displayWordList);
+        // } else if (false) {
+        //   setDisplayWordList([
+        //     ...displayWordList,
+        //     <span className="text-wrong">{event.key}</span>,
+        //   ]);
+        //   setwordIndex(wordIndex + 1);
+        //   console.log(displayWordList);
+        // }
 
         break;
       }
@@ -206,9 +217,10 @@ const TypingArea: TypingAreaType = () => {
   useEffect(() => {
     // focus on typing area when loaded
     typingAreaRef.current.focus();
-    generateWords();
-    generateWords();
-    generateWords();
+    setDisplayWordList((prevArray: any) => [
+      ...prevArray,
+      ...convertWordsToDisplayWords(generateWords()),
+    ]);
     console.log(generatedWordList);
   }, []);
 
@@ -225,12 +237,18 @@ const TypingArea: TypingAreaType = () => {
           isFocused ? "" : "filter blur-sm"
         }`}
       >
-        {generatedWordList.map((word: string, index: number) => (
-          <Word key={index} word={word} />
+        {displayWordList.map((word: LetterType[], wordIndex: number) => (
+          <div key={wordIndex} className="word">
+            {word.map((charObj: LetterType, charIndex) => (
+              <span key={charIndex} className="word__letter">
+                {charObj.char}
+              </span>
+            ))}
+          </div>
         ))}
       </div>
 
-      <div>{displayWordList}</div>
+      {/* <div>{displayWordList}</div> */}
     </div>
   );
 };

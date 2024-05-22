@@ -3,9 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import Word from "./Word";
-import { Special_Elite } from "next/font/google";
 import Char from "./Char";
-import { group } from "console";
 
 type TypingAreaType = () => JSX.Element;
 
@@ -190,24 +188,13 @@ const TypingArea: TypingAreaType = () => {
           event.key === "Control" ||
           event.key === "Shift" ||
           event.key === "Alt"
-        )
+        ) {
           break;
-
-        // if (true) {
-        //   setDisplayWordList([
-        //     ...displayWordList,
-        //     <span className="text-correct">{event.key}</span>,
-        //   ]);
-        //   setwordIndex(wordIndex + 1);
-        //   console.log(displayWordList);
-        // } else if (false) {
-        //   setDisplayWordList([
-        //     ...displayWordList,
-        //     <span className="text-wrong">{event.key}</span>,
-        //   ]);
-        //   setwordIndex(wordIndex + 1);
-        //   console.log(displayWordList);
-        // }
+        } else if (event.key === "Space") {
+        } else {
+          // add letter to typed list
+          // determine if letter is correct or not
+        }
 
         break;
       }
@@ -217,9 +204,11 @@ const TypingArea: TypingAreaType = () => {
   useEffect(() => {
     // focus on typing area when loaded
     typingAreaRef.current.focus();
+    const newWords: string[] = generateWords();
+    setGeneratedWordList((prevArray: any) => [...prevArray, ...newWords]);
     setDisplayWordList((prevArray: any) => [
       ...prevArray,
-      ...convertWordsToDisplayWords(generateWords()),
+      ...convertWordsToDisplayWords(newWords),
     ]);
     console.log(generatedWordList);
   }, []);

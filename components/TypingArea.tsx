@@ -8,10 +8,16 @@ import Char from "./Char";
 type TypingAreaType = () => JSX.Element;
 
 const TypingArea: TypingAreaType = () => {
-  type LetterType = {
+  interface LetterType {
     char: string;
+    typedChar: string;
     isCorrect: boolean;
-  };
+  }
+
+  interface WordIndexType {
+    index: number;
+    letterIndex: number;
+  }
 
   const wordList: string[] = [
     "the",
@@ -119,7 +125,10 @@ const TypingArea: TypingAreaType = () => {
   const [key, setKey]: [string, any] = useState<string>("");
   const typingAreaRef: any = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState<boolean>(true);
-  const [wordIndex, setwordIndex] = useState<number>(0);
+  const [wordIndex, setwordIndex] = useState<WordIndexType>({
+    index: 0,
+    letterIndex: 0,
+  });
 
   const [generatedWordList, setGeneratedWordList] = useState<string[]>([]);
   const [displayWordList, setDisplayWordList] = useState<LetterType[][]>([]);
@@ -154,6 +163,7 @@ const TypingArea: TypingAreaType = () => {
       const splitedWord: string[] = word.split("");
       const wrapedWord: Object[] = splitedWord.map((char: string) => ({
         char: char,
+        typedChar: null,
         isCorrect: null,
       }));
       return wrapedWord;
@@ -173,29 +183,41 @@ const TypingArea: TypingAreaType = () => {
   type HandleKeyPressType = (event: any) => void;
 
   const handleKeyPress: HandleKeyPressType = (event) => {
-    setKey(event.key);
+    const typedKey: string = event.key;
+    setKey(typedKey);
 
-    switch (event.key) {
+    switch (typedKey) {
       case "Backspace": {
         setDisplayWordList([...displayWordList.slice(0, -1)]);
-        setwordIndex(wordIndex - 1);
+        // setwordIndex(wordIndex - 1);
         break;
       }
 
       default: {
         if (
-          event.key === "Enter" ||
-          event.key === "Control" ||
-          event.key === "Shift" ||
-          event.key === "Alt"
+          typedKey === "Enter" ||
+          typedKey === "Control" ||
+          typedKey === "Shift" ||
+          typedKey === "Alt"
         ) {
           break;
-        } else if (event.key === "Space") {
+        } else if (typedKey === "Space") {
+          setwordIndex({ index: wordIndex.index + 1, letterIndex: 0 });
         } else {
           // add letter to typed list
-          // determine if letter is correct or not
-        }
 
+          const letterObj: LetterType =
+            displayWordList[wordIndex.index][wordIndex.letterIndex];
+
+          letterObj.typedChar = typedKey;
+
+          // determine if letter is correct or not
+          if (letterObj.char === typedKey) {
+            letterObj.isCorrect = true;
+          } else if (letterObj.char !== typedKey) {
+            letterObj.isCorrect = false;
+          }
+        }
         break;
       }
     }
@@ -210,7 +232,6 @@ const TypingArea: TypingAreaType = () => {
       ...prevArray,
       ...convertWordsToDisplayWords(newWords),
     ]);
-    console.log(generatedWordList);
   }, []);
 
   return (
@@ -230,7 +251,7 @@ const TypingArea: TypingAreaType = () => {
           <div key={wordIndex} className="word">
             {word.map((charObj: LetterType, charIndex) => (
               <span key={charIndex} className="word__letter">
-                {charObj.char}
+                <Char char={charObj.char} isCorrect={charObj.isCorrect} />
               </span>
             ))}
           </div>

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef } from "react";
 import { useState } from "react";
-import Word from "./Word";
 import Char from "./Char";
 
 type TypingAreaType = () => JSX.Element;
@@ -205,18 +204,49 @@ const TypingArea: TypingAreaType = () => {
           setwordIndex({ index: wordIndex.index + 1, letterIndex: 0 });
         } else {
           // add letter to typed list
-
           const letterObj: LetterType =
             displayWordList[wordIndex.index][wordIndex.letterIndex];
+
+          setDisplayWordList((prevDisplayWordList: LetterType[][]) => {
+            const newDisplayWordList: LetterType[][] = [...prevDisplayWordList];
+            newDisplayWordList[wordIndex.index][wordIndex.letterIndex] = {
+              ...newDisplayWordList[wordIndex.index][wordIndex.letterIndex],
+              typedChar: typedKey,
+            };
+            return newDisplayWordList;
+          });
 
           letterObj.typedChar = typedKey;
 
           // determine if letter is correct or not
           if (letterObj.char === typedKey) {
-            letterObj.isCorrect = true;
+            setDisplayWordList((prevDisplayWordList: LetterType[][]) => {
+              const newDisplayWordList: LetterType[][] = [
+                ...prevDisplayWordList,
+              ];
+              newDisplayWordList[wordIndex.index][wordIndex.letterIndex] = {
+                ...newDisplayWordList[wordIndex.index][wordIndex.letterIndex],
+                isCorrect: true,
+              };
+              return newDisplayWordList;
+            });
           } else if (letterObj.char !== typedKey) {
-            letterObj.isCorrect = false;
+            setDisplayWordList((prevDisplayWordList: LetterType[][]) => {
+              const newDisplayWordList: LetterType[][] = [
+                ...prevDisplayWordList,
+              ];
+              newDisplayWordList[wordIndex.index][wordIndex.letterIndex] = {
+                ...newDisplayWordList[wordIndex.index][wordIndex.letterIndex],
+                isCorrect: false,
+              };
+              return newDisplayWordList;
+            });
           }
+
+          setwordIndex({
+            index: wordIndex.index,
+            letterIndex: wordIndex.letterIndex + 1,
+          });
         }
         break;
       }
@@ -257,8 +287,6 @@ const TypingArea: TypingAreaType = () => {
           </div>
         ))}
       </div>
-
-      {/* <div>{displayWordList}</div> */}
     </div>
   );
 };

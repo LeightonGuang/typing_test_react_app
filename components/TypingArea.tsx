@@ -157,7 +157,6 @@ const TypingArea: TypingAreaType = () => {
   const convertWordsToDisplayWords: ConvertWordsToDisplayWordsType = (
     words: string[]
   ) => {
-    console.log(words);
     const groupedList: Object[][] = words.map((word: string) => {
       const splitedWord: string[] = word.split("");
       const wrapedWord: Object[] = splitedWord.map((char: string) => ({
@@ -167,7 +166,6 @@ const TypingArea: TypingAreaType = () => {
       }));
       return wrapedWord;
     });
-    console.log(groupedList);
     return groupedList;
   };
 
@@ -188,7 +186,15 @@ const TypingArea: TypingAreaType = () => {
     switch (typedKey) {
       case "Backspace": {
         setDisplayWordList([...displayWordList.slice(0, -1)]);
-        // setwordIndex(wordIndex - 1);
+
+        if (wordIndex.letterIndex === 0) {
+          setwordIndex({ index: wordIndex.index - 1, letterIndex: 0 });
+        } else if (wordIndex.letterIndex !== 0) {
+          setwordIndex({
+            index: wordIndex.index,
+            letterIndex: wordIndex.letterIndex - 1,
+          });
+        }
         break;
       }
 
@@ -200,7 +206,7 @@ const TypingArea: TypingAreaType = () => {
           typedKey === "Alt"
         ) {
           break;
-        } else if (typedKey === "Space") {
+        } else if (typedKey === " ") {
           setwordIndex({ index: wordIndex.index + 1, letterIndex: 0 });
         } else {
           // add letter to typed list

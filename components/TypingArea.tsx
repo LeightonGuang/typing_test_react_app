@@ -9,8 +9,8 @@ type TypingAreaType = () => JSX.Element;
 const TypingArea: TypingAreaType = () => {
   interface LetterType {
     char: string;
-    typedChar: string;
-    isCorrect: boolean;
+    typedChar: string | null;
+    isCorrect: boolean | null;
   }
 
   interface WordIndexType {
@@ -182,14 +182,36 @@ const TypingArea: TypingAreaType = () => {
   const handleKeyPress: HandleKeyPressType = (event) => {
     const typedKey: string = event.key;
     setKey(typedKey);
+    console.log(
+      `typed: ${event.key}` +
+        "\nindex:" +
+        wordIndex.index +
+        "\nletterIndex:" +
+        wordIndex.letterIndex
+    );
 
     switch (typedKey) {
       case "Backspace": {
-        setDisplayWordList([...displayWordList.slice(0, -1)]);
+        // remove letter from typed list
+        setDisplayWordList((prevDisplayWordList: LetterType[][]) => {
+          const newDisplayWordList: LetterType[][] = [...prevDisplayWordList];
+
+          newDisplayWordList[wordIndex.index][wordIndex.letterIndex] = {
+            ...newDisplayWordList[wordIndex.index][wordIndex.letterIndex],
+            typedChar: "",
+            isCorrect: null,
+          };
+          return newDisplayWordList;
+        });
 
         if (wordIndex.letterIndex === 0) {
-          setwordIndex({ index: wordIndex.index - 1, letterIndex: 0 });
+          // first letter of the word
+          setwordIndex({
+            index: wordIndex.index - 1,
+            letterIndex: displayWordList[wordIndex.index - 1].length - 1,
+          });
         } else if (wordIndex.letterIndex !== 0) {
+          // not the first letter of the word
           setwordIndex({
             index: wordIndex.index,
             letterIndex: wordIndex.letterIndex - 1,

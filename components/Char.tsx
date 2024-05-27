@@ -12,9 +12,9 @@ const Char = ({
       className={`${
         isCorrect
           ? "text-correct"
-          : isCorrect === null
-          ? "text-white"
-          : "text-wrong"
+          : isCorrect === false
+          ? "text-wrong"
+          : "text-white"
       }`}
     >
       {char}

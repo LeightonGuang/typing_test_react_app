@@ -293,7 +293,7 @@ const TypingArea: TypingAreaType = () => {
   }, []);
 
   return (
-    <div className="typingArea max-w-50rem">
+    <div className="typingArea ">
       <div>{key}</div>
       <div
         onKeyDown={handleKeyPress}
@@ -301,7 +301,7 @@ const TypingArea: TypingAreaType = () => {
         tabIndex={0}
         onFocus={checkDivFocus}
         onBlur={checkDivFocus}
-        className={`inline-flex gap-2 bg-slate-600 p-3 rounded-md text-[1.2rem]  ${
+        className={`inline-flex gap-2 bg-slate-600 p-3 rounded-md text-[1.2rem] max-w-[50rem] ${
           isFocused ? "" : "filter blur-sm"
         }`}
       >

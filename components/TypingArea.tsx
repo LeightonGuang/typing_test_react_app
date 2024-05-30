@@ -182,14 +182,6 @@ const TypingArea: TypingAreaType = () => {
     const typedKey: string = event.key;
     setKey(typedKey);
 
-    console.log(
-      `typed: ${event.key}` +
-        "\nindex: " +
-        wordIndex.index +
-        "\nletterIndex: " +
-        wordIndex.letterIndex
-    );
-
     console.log(displayWordList);
 
     if (typedKey === "Backspace") {
@@ -235,9 +227,14 @@ const TypingArea: TypingAreaType = () => {
 
       const newLetterIndex: number = wordIndex.letterIndex + 1;
 
-      console.log(newLetterIndex);
+      console.log({
+        index: wordIndex.index,
+        letterIndex: newLetterIndex,
+        typed: event.key,
+      });
 
-      if (Object.is(wordIndex, { index: 0, letterIndex: 0 }) === false) {
+      if (Object.is(wordIndex, { index: 0, letterIndex: -1 }) === false) {
+        // not the first letter of the first word
         setwordIndex({
           index: wordIndex.index,
           letterIndex: newLetterIndex,
@@ -263,8 +260,8 @@ const TypingArea: TypingAreaType = () => {
       if (letterObj.char === typedKey) {
         setDisplayWordList((prevDisplayWordList: LetterType[][]) => {
           const newDisplayWordList: LetterType[][] = [...prevDisplayWordList];
-          newDisplayWordList[wordIndex.index][wordIndex.letterIndex] = {
-            ...newDisplayWordList[wordIndex.index][wordIndex.letterIndex],
+          newDisplayWordList[wordIndex.index][newLetterIndex] = {
+            ...newDisplayWordList[wordIndex.index][newLetterIndex],
             isCorrect: true,
           };
           return newDisplayWordList;
@@ -272,8 +269,8 @@ const TypingArea: TypingAreaType = () => {
       } else if (letterObj.char !== typedKey) {
         setDisplayWordList((prevDisplayWordList: LetterType[][]) => {
           const newDisplayWordList: LetterType[][] = [...prevDisplayWordList];
-          newDisplayWordList[wordIndex.index][wordIndex.letterIndex] = {
-            ...newDisplayWordList[wordIndex.index][wordIndex.letterIndex],
+          newDisplayWordList[wordIndex.index][newLetterIndex] = {
+            ...newDisplayWordList[wordIndex.index][newLetterIndex],
             isCorrect: false,
           };
           return newDisplayWordList;

@@ -126,7 +126,7 @@ const TypingArea: TypingAreaType = () => {
   const [isFocused, setIsFocused] = useState<boolean>(true);
   const [wordIndex, setwordIndex] = useState<WordIndexType>({
     index: 0,
-    letterIndex: 0,
+    letterIndex: -1,
   });
 
   const [displayWordList, setDisplayWordList] = useState<LetterType[][]>([]);
@@ -193,15 +193,15 @@ const TypingArea: TypingAreaType = () => {
     console.log(displayWordList);
 
     if (typedKey === "Backspace") {
-      if (wordIndex.index === 0 && wordIndex.letterIndex === 0) return;
+      if (wordIndex.index === 0 && wordIndex.letterIndex === -1) return;
       // first letter of the word
 
-      // remove letter from typed list
       console.log({
         index: wordIndex.index,
         letterIndex: wordIndex.letterIndex,
       });
 
+      // remove letter from typed list
       const newDisplayWordList: LetterType[][] = [...displayWordList];
 
       newDisplayWordList[wordIndex.index][wordIndex.letterIndex] = {
@@ -212,46 +212,46 @@ const TypingArea: TypingAreaType = () => {
 
       setDisplayWordList(newDisplayWordList);
 
-      if (wordIndex.letterIndex === 0) {
+      if (wordIndex.letterIndex === -1) {
         // first letter of the word
         setwordIndex({
           index: wordIndex.index - 1,
           letterIndex: displayWordList[wordIndex.index - 1].length - 1,
         });
-      } else if (wordIndex.letterIndex !== 0) {
+      } else if (wordIndex.letterIndex !== -1) {
         // not the first letter of the word
         setwordIndex({
           index: wordIndex.index,
           letterIndex: wordIndex.letterIndex - 1,
         });
       }
-    } else if (
-      typedKey === "Enter" ||
-      typedKey === "Control" ||
-      typedKey === "Shift" ||
-      typedKey === "Alt"
-    ) {
-      return;
     } else if (typedKey === " ") {
+      // space
       console.log("space");
-      setwordIndex({ index: wordIndex.index + 1, letterIndex: 0 });
+      setwordIndex({ index: wordIndex.index + 1, letterIndex: -1 });
     } else if (/[a-zA-Z]/.test(typedKey)) {
+      // are letters
       console.log("letter");
+
+      const newLetterIndex: number = wordIndex.letterIndex + 1;
+
+      console.log(newLetterIndex);
+
       if (Object.is(wordIndex, { index: 0, letterIndex: 0 }) === false) {
         setwordIndex({
           index: wordIndex.index,
-          letterIndex: wordIndex.letterIndex + 1,
+          letterIndex: newLetterIndex,
         });
       }
 
       const letterObj: LetterType =
-        displayWordList[wordIndex.index][wordIndex.letterIndex];
+        displayWordList[wordIndex.index][newLetterIndex];
 
       // add letter to typed list
       setDisplayWordList((prevDisplayWordList: LetterType[][]) => {
         const newDisplayWordList: LetterType[][] = [...prevDisplayWordList];
-        newDisplayWordList[wordIndex.index][wordIndex.letterIndex] = {
-          ...newDisplayWordList[wordIndex.index][wordIndex.letterIndex],
+        newDisplayWordList[wordIndex.index][newLetterIndex] = {
+          ...newDisplayWordList[wordIndex.index][newLetterIndex],
           typedChar: typedKey,
         };
         return newDisplayWordList;
@@ -279,6 +279,8 @@ const TypingArea: TypingAreaType = () => {
           return newDisplayWordList;
         });
       }
+    } else {
+      return;
     }
   };
 

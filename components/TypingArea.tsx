@@ -177,27 +177,25 @@ const TypingArea: TypingAreaType = () => {
   }, []);
 
   return (
-    <div className="typingArea ">
-      <div
-        onKeyDown={handleKeyPress}
-        ref={typingAreaRef}
-        tabIndex={0}
-        onFocus={checkDivFocus}
-        onBlur={checkDivFocus}
-        className={`inline-flex gap-2 bg-slate-600 p-3 rounded-md text-[1.2rem] max-w-[50rem] ${
-          isFocused ? "" : "filter blur-sm"
-        }`}
-      >
-        {displayWordList.map((word: LetterType[], wordIndex: number) => (
-          <div key={wordIndex} className="word">
-            {word.map((charObj: LetterType, charIndex) => (
-              <span key={charIndex} className="word__letter">
-                <Char char={charObj.char} isCorrect={charObj.isCorrect} />
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
+    <div
+      onKeyDown={handleKeyPress}
+      ref={typingAreaRef}
+      tabIndex={0}
+      onFocus={checkDivFocus}
+      onBlur={checkDivFocus}
+      className={`typingArea inline-flex gap-2 bg-slate-600 p-3 rounded-md text-[1.2rem] max-w-[50rem] ${
+        isFocused ? "" : "filter blur-sm"
+      }`}
+    >
+      {displayWordList.map((word: LetterType[], wordIndex: number) => (
+        <div key={wordIndex} className="word">
+          {word.map((charObj: LetterType, charIndex) => (
+            <span key={charIndex} className="word__letter">
+              <Char char={charObj.char} isCorrect={charObj.isCorrect} />
+            </span>
+          ))}
+        </div>
+      ))}
     </div>
   );
 };

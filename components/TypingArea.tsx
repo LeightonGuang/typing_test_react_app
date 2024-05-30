@@ -187,10 +187,22 @@ const TypingArea: TypingAreaType = () => {
         isFocused ? "" : "filter blur-sm"
       }`}
     >
-      {displayWordList.map((word: LetterType[], wordIndex: number) => (
-        <div key={wordIndex} className="word">
-          {word.map((charObj: LetterType, charIndex) => (
-            <span key={charIndex} className="word__letter">
+      {displayWordList.map((word: LetterType[], wIndex: number) => (
+        <div
+          key={wIndex}
+          className={`word rounded-[0.375rem] ${
+            wIndex === wordIndex.index ? "bg-[#888888]" : ""
+          }`}
+        >
+          {word.map((charObj: LetterType, cIndex) => (
+            <span
+              key={cIndex}
+              // className={`word__container ${
+              //   wIndex === wordIndex.index && cIndex === wordIndex.letterIndex
+              //     ? "bg-[#ff0000]"
+              //     : ""
+              // }`}
+            >
               <Char char={charObj.char} isCorrect={charObj.isCorrect} />
             </span>
           ))}

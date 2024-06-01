@@ -4,14 +4,13 @@ import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import Char from "./Char";
 
+import { TypingAreaType } from "@/_types/TypingAreaType";
 import { LetterType } from "@/_types/LetterType";
 import { WordIndexType } from "@/_types/WordIndexType";
 import { wordList } from "@/_assets/wordList";
 import { GenerateWordsType } from "@/_types/GenerateWordsType";
 import { ConvertWordsToDisplayWordsType } from "@/_types/ConvertWordsToDisplayWordsType";
 import { HandleKeyPressType } from "@/_types/HandleKeyPressType";
-
-type TypingAreaType = () => JSX.Element;
 
 const TypingArea: TypingAreaType = () => {
   const typingAreaRef: any = useRef<HTMLDivElement>(null);

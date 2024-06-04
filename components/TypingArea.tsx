@@ -165,6 +165,15 @@ const TypingArea: TypingAreaType = () => {
     }
   };
 
+  const typingAreaTenWords: () => LetterType[][] = () => {
+    const tenWordsList: LetterType[][] = [];
+
+    for (let i: number = 0; i < 10; i++) {
+      tenWordsList.push(displayWordList[wordIndex.index + i]);
+    }
+    return tenWordsList;
+  };
+
   useEffect(() => {
     // focus on typing area when loaded
     typingAreaRef.current.focus();
@@ -186,27 +195,18 @@ const TypingArea: TypingAreaType = () => {
         isFocused ? "" : "filter blur-sm"
       }`}
     >
-      {displayWordList.map((word: LetterType[], wIndex: number) => (
-        <div
-          key={wIndex}
-          className={`word rounded-[0.375rem] ${
-            wIndex === wordIndex.index ? "bg-[#888888]" : ""
-          }`}
-        >
-          {word.map((charObj: LetterType, cIndex) => (
-            <span
-              key={cIndex}
-              // className={`word__container ${
-              //   wIndex === wordIndex.index && cIndex === wordIndex.letterIndex
-              //     ? "bg-[#ff0000]"
-              //     : ""
-              // }`}
-            >
-              <Char char={charObj.char} isCorrect={charObj.isCorrect} />
-            </span>
-          ))}
-        </div>
-      ))}
+      <div>
+        {typingAreaTenWords().map((word: LetterType[], wordIndex) => (
+          <div className="typingArea__word" key={wordIndex}>
+            {word &&
+              word.map((charObj: LetterType, charIndex) => (
+                <span key={charIndex}>
+                  <Char char={charObj.char} isCorrect={charObj.isCorrect} />
+                </span>
+              ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

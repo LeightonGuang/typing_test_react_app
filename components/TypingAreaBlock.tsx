@@ -12,7 +12,7 @@ import { GenerateWordsType } from "@/_types/GenerateWordsType";
 import { ConvertWordsToDisplayWordsType } from "@/_types/ConvertWordsToDisplayWordsType";
 import { HandleKeyPressType } from "@/_types/HandleKeyPressType";
 
-const TypingArea: TypingAreaType = () => {
+const TypingAreaBlock: TypingAreaType = () => {
   const typingAreaRef: any = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState<boolean>(true);
   const [wordIndex, setwordIndex] = useState<WordIndexType>({
@@ -211,4 +211,4 @@ const TypingArea: TypingAreaType = () => {
   );
 };
 
-export default TypingArea;
+export default TypingAreaBlock;

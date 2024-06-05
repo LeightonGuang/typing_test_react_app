@@ -1,5 +1,5 @@
 export interface LetterType {
-  char: string;
+  char: string | null;
   typedChar: string | null;
   isCorrect: boolean | null;
 }

@@ -125,8 +125,8 @@ const TypingAreaBlock: TypingAreaType = () => {
         });
       }
 
-      const letterObj: LetterType =
-        displayWordList[wordIndex.index][newLetterIndex];
+      const letterObj: LetterType | undefined =
+        displayWordList[wordIndex.index]?.[newLetterIndex];
 
       // add letter to typed list
       setDisplayWordList((prevDisplayWordList: LetterType[][]) => {
@@ -165,10 +165,10 @@ const TypingAreaBlock: TypingAreaType = () => {
     }
   };
 
-  const typingAreaTenWords: () => LetterType[][] = () => {
+  const typingAreaWords: () => LetterType[][] = () => {
     const tenWordsList: LetterType[][] = [];
 
-    for (let i: number = 0; i < 10; i++) {
+    for (let i: number = 0; i < 15; i++) {
       tenWordsList.push(displayWordList[wordIndex.index + i]);
     }
     return tenWordsList;
@@ -191,17 +191,23 @@ const TypingAreaBlock: TypingAreaType = () => {
       tabIndex={0}
       onFocus={checkDivFocus}
       onBlur={checkDivFocus}
-      className={`typingArea inline-flex gap-2 bg-slate-600 p-3 rounded-md text-[1.2rem] max-w-[50rem] ${
+      className={`typingAreaBlock flex bg-slate-600 p-3 rounded-md ${
         isFocused ? "" : "filter blur-sm"
       }`}
     >
-      <div>
-        {typingAreaTenWords().map((word: LetterType[], wordIndex) => (
-          <div className="typingArea__word" key={wordIndex}>
+      <div className="typingAreaBlock__column flex gap-[0.1rem] flex-col text-[1.5rem] min-w-[4rem] min-h-[18rem]">
+        {typingAreaWords().map((word: LetterType[], wordIndex) => (
+          <div
+            className="typingAreaBlock__word  block gap-[5rem]"
+            key={wordIndex}
+          >
             {word &&
               word.map((charObj: LetterType, charIndex) => (
-                <span key={charIndex}>
-                  <Char char={charObj.char} isCorrect={charObj.isCorrect} />
+                <span className="typingAreaBlock__char" key={charIndex}>
+                  <Char
+                    char={(charObj.char ?? charObj.typedChar) as string}
+                    isCorrect={!("char" in charObj) ? false : charObj.isCorrect}
+                  />
                 </span>
               ))}
           </div>

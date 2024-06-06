@@ -1,10 +1,9 @@
-import React from "react";
+import LogIn from "@/components/LogIn";
 
 const LogInPage = () => {
   return (
     <div className="m-4">
-      <h1>Log In</h1>
-      <button>Google</button>
+      <LogIn />
     </div>
   );
 };

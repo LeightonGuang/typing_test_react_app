@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { useState } from "react";
-import Char from "./Char";
+import Word from "./Word";
 
 import { TypingAreaType } from "@/_types/TypingAreaType";
 import { LetterType } from "@/_types/LetterType";
@@ -20,14 +20,29 @@ const TypingAreaBlock: TypingAreaType = () => {
     letterIndex: -1,
   });
 
-  const [displayWordList, setDisplayWordList] = useState<LetterType[][]>([]);
+  const [displayWordList, setDisplayWordList] = useState<LetterType[][]>([
+    [],
+    [],
+  ]);
 
-  /**
-   * / displayWordList: string[] = [
-   * [`<span className={text-correct}>c</span>`, `<span className={text-correct}>a</span>`, `<span className={text-correct}>n</span>`],
-   * [`<span className={text-correct}>a</span>``<span className={text-correct}>t</span>`]
-   * ]
-   */
+  /*
+  displayWordList: [
+    [
+      { char: "h", typedChar: null, isCorrect: null },
+      { char: "e", typedChar: null, isCorrect: null },
+      { char: "l", typedChar: null, isCorrect: null },
+      { char: "l", typedChar: null, isCorrect: null },
+      { char: "o", typedChar: null, isCorrect: null },
+    ],
+    [
+      { char: "w", typedChar: null, isCorrect: null },
+      { char: "o", typedChar: null, isCorrect: null },
+      { char: "r", typedChar: null, isCorrect: null },
+      { char: "l", typedChar: null, isCorrect: null },
+      { char: "d", typedChar: null, isCorrect: null },
+    ],
+  ],
+ */
 
   const generateWords: GenerateWordsType = (numWords: number = 10) => {
     const newWordList: string[] = [];
@@ -191,26 +206,13 @@ const TypingAreaBlock: TypingAreaType = () => {
       tabIndex={0}
       onFocus={checkDivFocus}
       onBlur={checkDivFocus}
-      className={`typingAreaBlock flex bg-slate-600 p-3 rounded-md ${
+      className={`typingAreaBlock flex bg-slate-600 py-[1rem] px-[1.5rem] rounded-md ${
         isFocused ? "" : "filter blur-sm"
       }`}
     >
       <div className="typingAreaBlock__column flex gap-[0.1rem] flex-col text-[1.5rem] min-w-[4rem] min-h-[18rem]">
-        {typingAreaWords().map((word: LetterType[], wordIndex) => (
-          <div
-            className="typingAreaBlock__word  block gap-[5rem]"
-            key={wordIndex}
-          >
-            {word &&
-              word.map((charObj: LetterType, charIndex) => (
-                <span className="typingAreaBlock__char" key={charIndex}>
-                  <Char
-                    char={(charObj.char ?? charObj.typedChar) as string}
-                    isCorrect={!("char" in charObj) ? false : charObj.isCorrect}
-                  />
-                </span>
-              ))}
-          </div>
+        {typingAreaWords().map((word: LetterType[], wIndex) => (
+          <Word word={word} wIndex={wIndex} key={wIndex} />
         ))}
       </div>
     </div>

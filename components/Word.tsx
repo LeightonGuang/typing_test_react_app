@@ -6,7 +6,7 @@ const Word = ({ word, wIndex }: { word: LetterType[]; wIndex: number }) => {
   return (
     <div
       className={`typingAreaBlock__word block gap-[5rem] h-[2.25rem] min-w-[4rem] ${
-        wIndex === 2 ? "bg-[#888888]" : ""
+        wIndex === 0 ? "bg-[#888888]" : ""
       }`}
       key={wIndex}
     >

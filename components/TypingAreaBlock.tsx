@@ -20,10 +20,12 @@ const TypingAreaBlock: TypingAreaType = () => {
     letterIndex: -1,
   });
 
-  const [displayWordList, setDisplayWordList] = useState<LetterType[][]>([
-    [],
-    [],
+  const [lastTwoTypedWords, setLastTwoTypedWords] = useState<LetterType[][]>([
+    [{ char: null, typedChar: null, isCorrect: null }],
+    [{ char: null, typedChar: null, isCorrect: null }],
   ]);
+
+  const [displayWordList, setDisplayWordList] = useState<LetterType[][]>([]);
 
   /*
   displayWordList: [
@@ -78,6 +80,16 @@ const TypingAreaBlock: TypingAreaType = () => {
     }
   };
 
+  function handleSpaceKeyPress(): void {
+    console.log("space");
+    const slicedList: LetterType[][] = displayWordList.slice(
+      wordIndex.index,
+      wordIndex.index + 2
+    );
+    setLastTwoTypedWords(slicedList);
+    setwordIndex({ index: wordIndex.index + 1, letterIndex: -1 });
+  }
+
   const handleKeyPress: HandleKeyPressType = (event) => {
     const typedKey: string = event.key;
 
@@ -118,8 +130,7 @@ const TypingAreaBlock: TypingAreaType = () => {
       }
     } else if (typedKey === " ") {
       // space
-      console.log("space");
-      setwordIndex({ index: wordIndex.index + 1, letterIndex: -1 });
+      handleSpaceKeyPress();
     } else if (/[a-zA-Z]/.test(typedKey)) {
       // are letters
       console.log("letter");
@@ -181,12 +192,12 @@ const TypingAreaBlock: TypingAreaType = () => {
   };
 
   const typingAreaWords: () => LetterType[][] = () => {
-    const tenWordsList: LetterType[][] = [];
+    const wordsList: LetterType[][] = [];
 
     for (let i: number = 0; i < 15; i++) {
-      tenWordsList.push(displayWordList[wordIndex.index + i]);
+      wordsList.push(displayWordList[wordIndex.index + i]);
     }
-    return tenWordsList;
+    return wordsList;
   };
 
   useEffect(() => {
@@ -206,10 +217,15 @@ const TypingAreaBlock: TypingAreaType = () => {
       tabIndex={0}
       onFocus={checkDivFocus}
       onBlur={checkDivFocus}
-      className={`typingAreaBlock flex bg-slate-600 py-[1rem] px-[1.5rem] rounded-md ${
+      className={`typingAreaBlock flex-col bg-slate-600 py-[1rem] px-[1.5rem] rounded-md ${
         isFocused ? "" : "filter blur-sm"
       }`}
     >
+      <div className="typingAreaBlock__typed flex gap-[0.1rem] flex-col text-[1.5rem] min-w-[4rem] min-h-[4.5rem]">
+        {lastTwoTypedWords.map((word: LetterType[], wIndex: number) => (
+          <Word word={word} wIndex={wIndex} key={wIndex} />
+        ))}
+      </div>
       <div className="typingAreaBlock__column flex gap-[0.1rem] flex-col text-[1.5rem] min-w-[4rem] min-h-[18rem]">
         {typingAreaWords().map((word: LetterType[], wIndex) => (
           <Word word={word} wIndex={wIndex} key={wIndex} />

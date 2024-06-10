@@ -2,11 +2,19 @@ import { LetterType } from "@/_types/LetterType";
 import React from "react";
 import Char from "./Char";
 
-const Word = ({ word, wIndex }: { word: LetterType[]; wIndex: number }) => {
+const Word = ({
+  word,
+  wIndex,
+  isTyping,
+}: {
+  word: LetterType[];
+  wIndex: number;
+  isTyping: boolean;
+}) => {
   return (
     <div
       className={`typingAreaBlock__word block gap-[5rem] h-[2.25rem] min-w-[4rem] ${
-        wIndex === 0 ? "bg-[#888888]" : ""
+        isTyping && wIndex === 0 ? "bg-[#888888]" : ""
       }`}
       key={wIndex}
     >

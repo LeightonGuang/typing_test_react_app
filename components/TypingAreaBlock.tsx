@@ -90,44 +90,48 @@ const TypingAreaBlock: TypingAreaType = () => {
     setwordIndex({ index: wordIndex.index + 1, letterIndex: -1 });
   }
 
+  function handleBackSpaceKeyPress(): void {
+    if (wordIndex.index === 0 && wordIndex.letterIndex === -1) return;
+    // first letter of the word
+
+    console.log({
+      index: wordIndex.index,
+      letterIndex: wordIndex.letterIndex,
+    });
+
+    // remove letter from typed list
+    const newDisplayWordList: LetterType[][] = [...displayWordList];
+
+    newDisplayWordList[wordIndex.index][wordIndex.letterIndex] = {
+      ...newDisplayWordList[wordIndex.index][wordIndex.letterIndex],
+      typedChar: "",
+      isCorrect: null,
+    };
+
+    setDisplayWordList(newDisplayWordList);
+
+    if (wordIndex.letterIndex === -1) {
+      // first letter of the word
+      setwordIndex({
+        index: wordIndex.index - 1,
+        letterIndex: displayWordList[wordIndex.index - 1].length - 1,
+      });
+    } else if (wordIndex.letterIndex !== -1) {
+      // not the first letter of the word
+      setwordIndex({
+        index: wordIndex.index,
+        letterIndex: wordIndex.letterIndex - 1,
+      });
+    }
+  }
+
   const handleKeyPress: HandleKeyPressType = (event) => {
     const typedKey: string = event.key;
 
     console.log(displayWordList);
 
     if (typedKey === "Backspace") {
-      if (wordIndex.index === 0 && wordIndex.letterIndex === -1) return;
-      // first letter of the word
-
-      console.log({
-        index: wordIndex.index,
-        letterIndex: wordIndex.letterIndex,
-      });
-
-      // remove letter from typed list
-      const newDisplayWordList: LetterType[][] = [...displayWordList];
-
-      newDisplayWordList[wordIndex.index][wordIndex.letterIndex] = {
-        ...newDisplayWordList[wordIndex.index][wordIndex.letterIndex],
-        typedChar: "",
-        isCorrect: null,
-      };
-
-      setDisplayWordList(newDisplayWordList);
-
-      if (wordIndex.letterIndex === -1) {
-        // first letter of the word
-        setwordIndex({
-          index: wordIndex.index - 1,
-          letterIndex: displayWordList[wordIndex.index - 1].length - 1,
-        });
-      } else if (wordIndex.letterIndex !== -1) {
-        // not the first letter of the word
-        setwordIndex({
-          index: wordIndex.index,
-          letterIndex: wordIndex.letterIndex - 1,
-        });
-      }
+      handleBackSpaceKeyPress();
     } else if (typedKey === " ") {
       // space
       handleSpaceKeyPress();

@@ -81,12 +81,12 @@ const TypingAreaBlock: TypingAreaType = () => {
   };
 
   function handleSpaceKeyPress(): void {
-    console.log("space");
-    const slicedList: LetterType[][] = displayWordList.slice(
-      wordIndex.index,
-      wordIndex.index + 2
-    );
-    setLastTwoTypedWords(slicedList);
+    const newTypedList: LetterType[][] = [];
+    [newTypedList[0], newTypedList[1]] = [
+      lastTwoTypedWords[1],
+      displayWordList[wordIndex.index],
+    ];
+    setLastTwoTypedWords(newTypedList);
     setwordIndex({ index: wordIndex.index + 1, letterIndex: -1 });
   }
 
@@ -223,12 +223,12 @@ const TypingAreaBlock: TypingAreaType = () => {
     >
       <div className="typingAreaBlock__typed flex gap-[0.1rem] flex-col text-[1.5rem] min-w-[4rem] min-h-[4.5rem]">
         {lastTwoTypedWords.map((word: LetterType[], wIndex: number) => (
-          <Word word={word} wIndex={wIndex} key={wIndex} />
+          <Word word={word} wIndex={wIndex} isTyping={false} key={wIndex} />
         ))}
       </div>
       <div className="typingAreaBlock__column flex gap-[0.1rem] flex-col text-[1.5rem] min-w-[4rem] min-h-[18rem]">
-        {typingAreaWords().map((word: LetterType[], wIndex) => (
-          <Word word={word} wIndex={wIndex} key={wIndex} />
+        {typingAreaWords().map((word: LetterType[], wIndex: number) => (
+          <Word word={word} wIndex={wIndex} isTyping={true} key={wIndex} />
         ))}
       </div>
     </div>

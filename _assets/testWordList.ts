@@ -1,4 +1,4 @@
-export const wordList: string[] = [
+export const testWordList: string[] = [
   "the",
   "at",
   "there",

@@ -1,32 +1,31 @@
-import { LetterType } from "@/_types/LetterType";
-import React from "react";
-import Char from "./Char";
+"use client";
 
-const Word = ({
-  word,
-  wIndex,
-  isTyping,
-}: {
-  word: LetterType[];
-  wIndex: number;
-  isTyping: boolean;
-}) => {
+import Letter from "./Letter";
+
+interface Props {
+  className?: string;
+  splittedWordsLetters: {
+    char: string;
+    isCorrect: boolean | undefined;
+    isActive: boolean;
+  }[];
+}
+
+const Word = ({ className, splittedWordsLetters }: Props) => {
   return (
-    <div
-      className={`typingAreaBlock__word block gap-[5rem] h-[2.25rem] min-w-[4rem] ${
-        isTyping && wIndex === 0 ? "bg-[#888888]" : ""
-      }`}
-      key={wIndex}
-    >
-      {word &&
-        word.map((charObj: LetterType, cIndex: number) => (
-          <span className="typingAreaBlock__char" key={cIndex}>
-            <Char
-              char={(charObj.char ?? charObj.typedChar) as string}
-              isCorrect={!("char" in charObj) ? false : charObj.isCorrect}
+    <div className={`${className} hover:cursor-text`}>
+      {splittedWordsLetters.map(
+        ({ char, isCorrect, isActive }, letterIndex) => {
+          return (
+            <Letter
+              key={letterIndex}
+              char={char}
+              isCorrect={isCorrect}
+              isActive={isActive}
             />
-          </span>
-        ))}
+          );
+        },
+      )}
     </div>
   );
 };

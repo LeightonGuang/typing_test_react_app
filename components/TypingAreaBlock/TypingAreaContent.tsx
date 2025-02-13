@@ -3,7 +3,6 @@ import Word from "../Word";
 import { TypedWordsType } from "@/_types/TypedWordsType";
 
 interface Props {
-  generatedWords: string[];
   typedWords: TypedWordsType;
   activeCharIndex: number;
   activeWordIndex: number;
@@ -23,30 +22,52 @@ export const TypingAreaContent = ({
 
   return (
     <div
-      className="flex select-none flex-wrap gap-1 p-4 text-lg"
+      className="m-4 flex select-none flex-wrap gap-1 overflow-hidden text-lg"
       onClick={onInputFocus}
     >
       {typedWords.map(({ word, typed }, wordIndex) => {
         const splittedWord = word.split("");
         const splittedTypedWord = typed.split("");
 
-        const splittedWordsLetters = splittedWord.map((char, charIndex) => {
-          const letter = splittedTypedWord[charIndex] || char;
-          const isCorrect =
-            splittedTypedWord[charIndex] === undefined
-              ? undefined
-              : splittedTypedWord[charIndex] === char
-                ? true
-                : false;
-          const isActive =
-            charIndex === activeCharIndex && wordIndex === activeWordIndex;
+        if (splittedTypedWord.length <= splittedWord.length) {
+          const splittedWordsLetters = splittedWord.map((char, charIndex) => {
+            const letter = splittedTypedWord[charIndex] || char;
+            const isCorrect =
+              splittedTypedWord[charIndex] === undefined
+                ? undefined
+                : splittedTypedWord[charIndex] === char
+                  ? true
+                  : false;
+            const isActive =
+              charIndex === activeCharIndex && wordIndex === activeWordIndex;
 
-          return { char: letter, isCorrect: isCorrect, isActive: isActive };
-        });
+            return { char: letter, isCorrect, isActive };
+          });
 
-        return (
-          <Word key={wordIndex} splittedWordsLetters={splittedWordsLetters} />
-        );
+          return (
+            <Word key={wordIndex} splittedWordsLetters={splittedWordsLetters} />
+          );
+        }
+        if (splittedTypedWord.length > splittedWord.length) {
+          const splittedWordsLetters = splittedTypedWord.map(
+            (typedChar, charIndex) => {
+              const isCorrect =
+                splittedTypedWord[charIndex] === undefined
+                  ? undefined
+                  : splittedWord[charIndex] === typedChar
+                    ? true
+                    : false;
+              const isActive =
+                charIndex === activeCharIndex && wordIndex === activeWordIndex;
+
+              return { char: typedChar, isCorrect, isActive };
+            },
+          );
+
+          return (
+            <Word key={wordIndex} splittedWordsLetters={splittedWordsLetters} />
+          );
+        }
       })}
     </div>
   );

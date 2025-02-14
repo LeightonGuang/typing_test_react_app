@@ -5,9 +5,25 @@ interface Props {
   timer: number;
   wpm: number;
   setNumWords: (numWords: number) => void;
+  resetTypingArea: () => void;
+  generateWords: (numWords: number) => string[];
+  setGeneratedWords: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export const TypingAreaHeader = ({ timer, wpm, setNumWords }: Props) => {
+export const TypingAreaHeader = ({
+  timer,
+  wpm,
+  setNumWords,
+  resetTypingArea,
+  generateWords,
+  setGeneratedWords,
+}: Props) => {
+  const handleWordNumberButton = (numWords: number) => {
+    resetTypingArea();
+    setGeneratedWords(generateWords(numWords));
+    
+  };
+
   return (
     <CardHeader>
       <div className="flex flex-col gap-4">
@@ -32,7 +48,7 @@ export const TypingAreaHeader = ({ timer, wpm, setNumWords }: Props) => {
           <Button
             className="w-full rounded-none"
             variant={"outline"}
-            onClick={() => setNumWords(25)}
+            onClick={() => handleWordNumberButton(25)}
           >
             <span>25 words</span>
           </Button>
@@ -40,7 +56,7 @@ export const TypingAreaHeader = ({ timer, wpm, setNumWords }: Props) => {
           <Button
             className="w-full rounded-none"
             variant={"outline"}
-            onClick={() => setNumWords(50)}
+            onClick={() => handleWordNumberButton(50)}
           >
             <span>50 words</span>
           </Button>
@@ -48,7 +64,7 @@ export const TypingAreaHeader = ({ timer, wpm, setNumWords }: Props) => {
           <Button
             className="w-full rounded-none"
             variant={"outline"}
-            onClick={() => setNumWords(100)}
+            onClick={() => handleWordNumberButton(100)}
           >
             <span>100 words</span>
           </Button>

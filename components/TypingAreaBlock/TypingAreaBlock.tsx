@@ -1,42 +1,82 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  Line,
+  XAxis,
+  YAxis,
+  Legend,
+  Tooltip,
+  LineChart,
+  CartesianGrid,
+} from "recharts";
 import { Button } from "../ui/button";
-import { Card, CardFooter } from "../ui/card";
-
-import { WordType } from "@/_types/WordType";
+import { useEffect, useState } from "react";
+import { Separator } from "../ui/separator";
 import { TypingAreaHeader } from "./TypingAreaHeader";
 import { TypingAreaContent } from "./TypingAreaContent";
+import { Card, CardContent, CardFooter } from "../ui/card";
+
+import { testWordList } from "@/_assets/testWordList";
 import { TypingAreaType } from "@/_types/TypingAreaType";
 import { TypedWordsType } from "@/_types/TypedWordsType";
-import { testWordList } from "@/_assets/testWordList";
 
 const TypingAreaBlock: TypingAreaType = () => {
-  const [timer, setTimer] = useState(60);
+  const [isFocused, setIsFocused] = useState(false);
+  const [timer, setTimer] = useState(0);
   const [wpm, setWpm] = useState(0);
-  const [wordList, setWordList] = useState<WordType[]>([]);
+  const [isShowChart, setIsShowChart] = useState(false);
+  const [wpmData, setWpmData] = useState<{ wpm: number }[]>([]);
+  const [generatedWords, setGeneratedWords] = useState<string[]>([]);
+  const [numWords, setNumWords] = useState(25);
   const [activeCharIndex, setActiveCharIndex] = useState(0);
   const [activeWordIndex, setActiveWordIndex] = useState(0);
   const [typedActiveWord, setTypedActiveWord] = useState<string>("");
-  const [generatedWords, setGeneratedWords] = useState<string[]>([]);
   const [typedWords, setTypedWords] = useState<TypedWordsType>([]);
+
+  const calcWpm = (totalLettersTyped: number, time: number, errors: number) => {
+    const rawWpm = totalLettersTyped / 5 / (time / 60);
+
+    const netWpm = rawWpm - errors / (time / 60);
+
+    return netWpm;
+  };
+
+  const generateWords = (numWords: number) => {
+    const randomWordsList: string[] = Array.from({ length: numWords }).map(
+      () => {
+        return testWordList[Math.floor(Math.random() * testWordList.length)];
+      },
+    );
+
+    return randomWordsList;
+  };
+
+  const resetTypingArea = () => {
+    setActiveCharIndex(0);
+    setActiveWordIndex(0);
+    setTypedActiveWord("");
+    setTypedWords([]);
+    setTimer(0);
+    setWpm(0);
+  };
 
   // generate initial words
   useEffect(() => {
-    const randomWordsList: string[] = Array.from({ length: 30 }).map(
-      () => testWordList[Math.floor(Math.random() * testWordList.length)],
-    );
-
-    console.log("randomWordsList: ", randomWordsList);
+    const randomWordsList = generateWords(numWords);
     setGeneratedWords(randomWordsList);
-    setTypedWords(randomWordsList.map((word) => ({ word: word, typed: "" })));
   }, []);
+
+  useEffect(() => {
+    resetTypingArea();
+  }, [numWords]);
+
+  useEffect(() => {
+    setTypedWords(generatedWords.map((word) => ({ word: word, typed: "" })));
+  }, [generatedWords]);
 
   // handle typing
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      console.log(event.key);
-
       if (event.key === " ") {
         // Handle spacebar
         setActiveCharIndex(0);
@@ -59,6 +99,14 @@ const TypingAreaBlock: TypingAreaType = () => {
           });
         } else if (event.ctrlKey) {
           setTypedActiveWord("");
+          setTypedWords((prevTypedWords) => {
+            const newTypedWords = [...prevTypedWords];
+            newTypedWords[activeWordIndex] = {
+              ...newTypedWords[activeWordIndex],
+              typed: "",
+            };
+            return newTypedWords;
+          });
           setActiveCharIndex(0);
         }
 
@@ -97,41 +145,96 @@ const TypingAreaBlock: TypingAreaType = () => {
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
+    if (isFocused) {
+      document.addEventListener("keydown", handleKeyDown);
+    } else if (!isFocused) {
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [activeCharIndex, activeWordIndex, typedActiveWord]);
-
-  useEffect(() => {
-    console.table([
-      { name: "activeCharIndex", value: activeCharIndex },
-      { name: "activeWordIndex", value: activeWordIndex },
-      { name: "typedActiveWord", value: typedActiveWord },
-    ]);
-  }, [activeCharIndex, activeWordIndex, typedActiveWord]);
-
-  useEffect(() => {
-    console.log("typedWords: ", typedWords);
-  }, [typedWords]);
+  }, [activeCharIndex, activeWordIndex, typedActiveWord, isFocused]);
 
   return (
     <section>
-      <Card className="w-[50rem]">
-        <TypingAreaHeader timer={timer} wpm={wpm} />
+      <Card className="w-[50rem] rounded-none">
+        <TypingAreaHeader
+          timer={timer}
+          wpm={wpm}
+          setNumWords={setNumWords}
+          resetTypingArea={resetTypingArea}
+          generateWords={generateWords}
+          setGeneratedWords={setGeneratedWords}
+        />
+
+        <Separator />
 
         <TypingAreaContent
-          generatedWords={generatedWords}
           typedWords={typedWords}
           activeCharIndex={activeCharIndex}
           activeWordIndex={activeWordIndex}
+          generatedWords={generatedWords}
+          isFocused={isFocused}
+          setIsFocused={setIsFocused}
         />
 
-        <CardFooter>
+        <Separator />
+
+        <CardFooter className="p-4">
           <div className="flex w-full justify-center">
-            <Button className="w-min">Restart</Button>
-            <span>{typedActiveWord}</span>
+            <div className="flex gap-4">
+              <Button
+                className="w-min rounded-sm"
+                onClick={() => {
+                  resetTypingArea();
+                  setGeneratedWords(generateWords(numWords));
+                }}
+              >
+                Restart
+              </Button>
+
+              <Button
+                className="w-min rounded-sm"
+                onClick={() => setIsShowChart(!isShowChart)}
+              >
+                {isShowChart ? "Hide Chart" : "Show Chart"}
+              </Button>
+            </div>
           </div>
         </CardFooter>
       </Card>
+
+      {isShowChart && (
+        <div>
+          <Card className="mt-4 w-min">
+            <CardContent className="p-0">
+              <LineChart
+                className="m-4"
+                width={750}
+                height={200}
+                data={[{ wpm: 100 }, { wpm: 200 }, { wpm: 300 }]}
+                margin={{ top: 16, right: 32, left: 32, bottom: 16 }}
+              >
+                <CartesianGrid strokeDasharray="10 10" />
+                <XAxis axisLine={{ stroke: "#ffffff" }} strokeWidth={2} />
+                <YAxis
+                  axisLine={{ stroke: "#ffffff" }}
+                  dataKey={"wpm"}
+                  strokeWidth={2}
+                />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type={"monotone"}
+                  dataKey={"wpm"}
+                  isAnimationActive={false}
+                  stroke="#ffffff"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </section>
   );
 };

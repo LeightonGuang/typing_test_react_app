@@ -1,11 +1,9 @@
-import TypingAreaBlock from "@/components/TypingAreaBlock";
+import TypingAreaBlock from "@/components/TypingAreaBlock/TypingAreaBlock";
 
 export default function Home() {
   return (
-    <main className="home flex justify-center items-center h-[calc(100dvh-3.5rem)] w-dvw">
-      <div className="home__container">
-        <TypingAreaBlock />
-      </div>
+    <main className="flex h-dvh w-dvw items-center justify-center">
+      <TypingAreaBlock />
     </main>
   );
 }

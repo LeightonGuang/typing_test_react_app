@@ -13,7 +13,7 @@ interface Props {
 
 const Word = ({ className, splittedWordsLetters }: Props) => {
   return (
-    <div className={`${className} hover:cursor-text`}>
+    <div className={`${className} text-xl hover:cursor-text`}>
       {splittedWordsLetters.map(
         ({ char, isCorrect, isActive }, letterIndex) => {
           return (

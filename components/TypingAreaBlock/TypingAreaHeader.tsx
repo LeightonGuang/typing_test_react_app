@@ -9,6 +9,7 @@ interface Props {
   setGeneratedWords: React.Dispatch<React.SetStateAction<string[]>>;
   activeWordIndex: number;
   numErrors: number;
+  setNumWords: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const TypingAreaHeader = ({
@@ -19,10 +20,12 @@ export const TypingAreaHeader = ({
   setGeneratedWords,
   activeWordIndex,
   numErrors,
+  setNumWords,
 }: Props) => {
   const handleWordNumberButton = (numWords: number) => {
     resetTypingArea();
     setGeneratedWords(generateWords(numWords));
+    setNumWords(numWords);
   };
 
   const convertedTime = (ms: number) => {

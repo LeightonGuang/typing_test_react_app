@@ -217,6 +217,7 @@ const TypingAreaBlock: TypingAreaType = () => {
             setGeneratedWords={setGeneratedWords}
             activeWordIndex={activeWordIndex}
             numErrors={numErrors}
+            setNumWords={setNumWords}
           />
 
           <Separator />

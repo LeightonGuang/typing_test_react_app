@@ -9,7 +9,7 @@ import {
 } from "recharts";
 
 interface Props {
-  wpmData: { word: string; wpm: string }[];
+  wpmData: { word: string; wpm: string; isCorrect: boolean }[];
 }
 
 const TypingSpeedLineChart = ({ wpmData }: Props) => {
@@ -38,6 +38,13 @@ const TypingSpeedLineChart = ({ wpmData }: Props) => {
       <Line
         type={"monotone"}
         dataKey={"wpm"}
+        dot={({ cx, cy, payload }) => {
+          return payload.isCorrect ? (
+            <circle cx={cx} cy={cy} r={4} fill={"#7BC950"} />
+          ) : (
+            <circle cx={cx} cy={cy} r={4} fill={"#F71735"} />
+          );
+        }}
         stroke="#ffffff"
         strokeWidth={2}
         isAnimationActive={false}

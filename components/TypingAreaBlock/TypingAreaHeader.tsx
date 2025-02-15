@@ -4,24 +4,29 @@ import { CardHeader } from "../ui/card";
 interface Props {
   timer: number;
   wpm: number;
-  setNumWords: (numWords: number) => void;
   resetTypingArea: () => void;
   generateWords: (numWords: number) => string[];
   setGeneratedWords: React.Dispatch<React.SetStateAction<string[]>>;
+  activeWordIndex: number;
+  numErrors: number;
 }
 
 export const TypingAreaHeader = ({
   timer,
   wpm,
-  setNumWords,
   resetTypingArea,
   generateWords,
   setGeneratedWords,
+  activeWordIndex,
+  numErrors,
 }: Props) => {
   const handleWordNumberButton = (numWords: number) => {
     resetTypingArea();
     setGeneratedWords(generateWords(numWords));
-    
+  };
+
+  const convertedTime = (ms: number) => {
+    return ms / 100;
   };
 
   return (
@@ -29,18 +34,20 @@ export const TypingAreaHeader = ({
       <div className="flex flex-col gap-4">
         <div className="flex justify-between">
           <div className="flex flex-col justify-center gap-1">
-            <span>Time</span>
-            <span className="text-2xl font-bold">{timer}s</span>
+            <span>Time (s)</span>
+            <div className="flex gap-2 text-2xl font-bold">
+              <span className="w-20">{convertedTime(timer)}</span>
+            </div>
           </div>
 
           <div className="flex flex-col gap-1">
             <span>WPM</span>
-            <span className="text-2xl font-bold">{wpm}</span>
+            <span className="text-2xl font-bold">{wpm.toFixed(2)}</span>
           </div>
 
           <div className="flex flex-col gap-1">
             <span>Correct | Wrong</span>
-            <span className="text-2xl font-bold">0 | 0</span>
+            <span className="text-2xl font-bold">{`${activeWordIndex - numErrors} | ${numErrors}`}</span>
           </div>
         </div>
 

@@ -1,14 +1,5 @@
 "use client";
 
-import {
-  Line,
-  XAxis,
-  YAxis,
-  Legend,
-  Tooltip,
-  LineChart,
-  CartesianGrid,
-} from "recharts";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { Separator } from "../ui/separator";
@@ -19,24 +10,32 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import { testWordList } from "@/_assets/testWordList";
 import { TypingAreaType } from "@/_types/TypingAreaType";
 import { TypedWordsType } from "@/_types/TypedWordsType";
+import TypingSpeedLineChart from "../TypingSpeedLineChart/TypingSpeedLineChart";
 
 const TypingAreaBlock: TypingAreaType = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [startTimer, setStartTimer] = useState(false);
   const [wpm, setWpm] = useState(0);
   const [isShowChart, setIsShowChart] = useState(false);
-  const [wpmData, setWpmData] = useState<{ wpm: number }[]>([]);
+  const [wpmData, setWpmData] = useState<{ word: string; wpm: string }[]>([]);
   const [generatedWords, setGeneratedWords] = useState<string[]>([]);
   const [numWords, setNumWords] = useState(25);
+  const [numErrors, setNumErrors] = useState(0);
   const [activeCharIndex, setActiveCharIndex] = useState(0);
   const [activeWordIndex, setActiveWordIndex] = useState(0);
   const [typedActiveWord, setTypedActiveWord] = useState<string>("");
   const [typedWords, setTypedWords] = useState<TypedWordsType>([]);
+  const [typedLetterCount, setTypedLetterCount] = useState(0);
 
-  const calcWpm = (totalLettersTyped: number, time: number, errors: number) => {
-    const rawWpm = totalLettersTyped / 5 / (time / 60);
+  const calcWpm = (
+    totalLettersTyped: number,
+    timeInSeconds: number,
+    errors: number,
+  ) => {
+    const rawWpm = totalLettersTyped / 5 / (timeInSeconds / 60);
 
-    const netWpm = rawWpm - errors / (time / 60);
+    const netWpm = rawWpm - errors / (timeInSeconds / 60);
 
     return netWpm;
   };
@@ -58,6 +57,9 @@ const TypingAreaBlock: TypingAreaType = () => {
     setTypedWords([]);
     setTimer(0);
     setWpm(0);
+    setWpmData([]);
+    setStartTimer(false);
+    setTypedLetterCount(0);
   };
 
   // generate initial words
@@ -67,21 +69,69 @@ const TypingAreaBlock: TypingAreaType = () => {
   }, []);
 
   useEffect(() => {
+    if (startTimer) {
+      const time = setTimeout(() => {
+        setTimer((prevTimer) => prevTimer + 1);
+      }, 10);
+
+      return () => clearTimeout(time);
+    }
+  }, [startTimer, timer]);
+
+  // reset typing area
+  useEffect(() => {
     resetTypingArea();
   }, [numWords]);
 
+  // set typed words
   useEffect(() => {
     setTypedWords(generatedWords.map((word) => ({ word: word, typed: "" })));
   }, [generatedWords]);
 
+  // get typed letter count
+  useEffect(() => {
+    const count = typedWords.reduce(
+      (total, word) => total + word.typed.length,
+      0,
+    );
+    setTypedLetterCount(count);
+
+    // stop timer if last word is right
+    if (
+      activeWordIndex === numWords - 1 &&
+      typedWords[activeWordIndex]?.word === typedWords[activeWordIndex]?.typed
+    ) {
+      setStartTimer(false);
+    }
+  }, [typedWords]);
+
   // handle typing
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      const letterRegex = /^[a-zA-Z]$/;
+
       if (event.key === " ") {
         // Handle spacebar
         setActiveCharIndex(0);
         setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex + 1);
+        setWpmData((prevWpmData) => [
+          ...prevWpmData,
+          {
+            word: typedActiveWord,
+            wpm: calcWpm(typedLetterCount, timer / 100, 0).toFixed(2),
+          },
+        ]);
+        setWpm(calcWpm(typedLetterCount, timer / 100, 0));
         setTypedActiveWord("");
+        setNumErrors(() => {
+          return typedWords.reduce((total, word) => {
+            if (word.typed !== word.word && word.typed !== "") {
+              return ++total;
+            } else {
+              return total;
+            }
+          }, 0);
+        });
       } else if (event.key === "Backspace") {
         // Handle backspace
         if (activeWordIndex > 0 && activeCharIndex === 0) {
@@ -125,23 +175,21 @@ const TypingAreaBlock: TypingAreaType = () => {
             return newTypedWords;
           });
         }
-      } else {
+      } else if (event.key.match(letterRegex)) {
         // Handle regular characters
-        const letterRegex = /^[a-zA-Z]$/;
-        if (event.key.match(letterRegex)) {
-          setActiveCharIndex(typedActiveWord.length + 1);
-          setTypedActiveWord(
-            (prevTypedActiveWord) => prevTypedActiveWord + event.key,
-          );
-          setTypedWords((prevTypedWords) => {
-            const newTypedWords = [...prevTypedWords];
-            newTypedWords[activeWordIndex] = {
-              ...newTypedWords[activeWordIndex],
-              typed: newTypedWords[activeWordIndex].typed + event.key,
-            };
-            return newTypedWords;
-          });
-        }
+        if (!startTimer) setStartTimer(true);
+        setActiveCharIndex(typedActiveWord.length + 1);
+        setTypedActiveWord(
+          (prevTypedActiveWord) => prevTypedActiveWord + event.key,
+        );
+        setTypedWords((prevTypedWords) => {
+          const newTypedWords = [...prevTypedWords];
+          newTypedWords[activeWordIndex] = {
+            ...newTypedWords[activeWordIndex],
+            typed: newTypedWords[activeWordIndex].typed + event.key,
+          };
+          return newTypedWords;
+        });
       }
     };
 
@@ -156,85 +204,65 @@ const TypingAreaBlock: TypingAreaType = () => {
 
   return (
     <section>
-      <Card className="w-[50rem] rounded-none">
-        <TypingAreaHeader
-          timer={timer}
-          wpm={wpm}
-          setNumWords={setNumWords}
-          resetTypingArea={resetTypingArea}
-          generateWords={generateWords}
-          setGeneratedWords={setGeneratedWords}
-        />
+      <div className="flex flex-col items-center gap-4">
+        <Card className="w-[50rem] rounded-none">
+          <TypingAreaHeader
+            timer={timer}
+            wpm={wpm}
+            resetTypingArea={resetTypingArea}
+            generateWords={generateWords}
+            setGeneratedWords={setGeneratedWords}
+            activeWordIndex={activeWordIndex}
+            numErrors={numErrors}
+          />
 
-        <Separator />
+          <Separator />
 
-        <TypingAreaContent
-          typedWords={typedWords}
-          activeCharIndex={activeCharIndex}
-          activeWordIndex={activeWordIndex}
-          generatedWords={generatedWords}
-          isFocused={isFocused}
-          setIsFocused={setIsFocused}
-        />
+          <TypingAreaContent
+            typedWords={typedWords}
+            activeCharIndex={activeCharIndex}
+            activeWordIndex={activeWordIndex}
+            generatedWords={generatedWords}
+            isFocused={isFocused}
+            setIsFocused={setIsFocused}
+          />
 
-        <Separator />
+          <Separator />
 
-        <CardFooter className="p-4">
-          <div className="flex w-full justify-center">
-            <div className="flex gap-4">
-              <Button
-                className="w-min rounded-sm"
-                onClick={() => {
-                  resetTypingArea();
-                  setGeneratedWords(generateWords(numWords));
-                }}
-              >
-                Restart
-              </Button>
+          <CardFooter className="p-4">
+            <div className="flex w-full justify-center">
+              <div className="flex gap-4">
+                <Button
+                  className="w-min rounded-sm"
+                  onClick={() => {
+                    resetTypingArea();
+                    setGeneratedWords(generateWords(numWords));
+                  }}
+                >
+                  Restart
+                </Button>
 
-              <Button
-                className="w-min rounded-sm"
-                onClick={() => setIsShowChart(!isShowChart)}
-              >
-                {isShowChart ? "Hide Chart" : "Show Chart"}
-              </Button>
+                <Button
+                  className="w-min rounded-sm"
+                  onClick={() => setIsShowChart(!isShowChart)}
+                >
+                  {isShowChart ? "Hide Chart" : "Show Chart"}
+                </Button>
+              </div>
             </div>
-          </div>
-        </CardFooter>
-      </Card>
+          </CardFooter>
+        </Card>
 
-      {isShowChart && (
-        <div>
-          <Card className="mt-4 w-min">
-            <CardContent className="p-0">
-              <LineChart
-                className="m-4"
-                width={750}
-                height={200}
-                data={[{ wpm: 100 }, { wpm: 200 }, { wpm: 300 }]}
-                margin={{ top: 16, right: 32, left: 32, bottom: 16 }}
-              >
-                <CartesianGrid strokeDasharray="10 10" />
-                <XAxis axisLine={{ stroke: "#ffffff" }} strokeWidth={2} />
-                <YAxis
-                  axisLine={{ stroke: "#ffffff" }}
-                  dataKey={"wpm"}
-                  strokeWidth={2}
-                />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type={"monotone"}
-                  dataKey={"wpm"}
-                  isAnimationActive={false}
-                  stroke="#ffffff"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+        {isShowChart && (
+          <div>
+            <Card className="w-min rounded-none">
+              <CardContent className="p-0">
+                <TypingSpeedLineChart wpmData={wpmData} />
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
     </section>
   );
 };

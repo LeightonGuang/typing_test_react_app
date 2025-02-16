@@ -19,7 +19,7 @@ const TypingAreaBlock: TypingAreaType = () => {
   const [wpm, setWpm] = useState(0);
   const [isShowChart, setIsShowChart] = useState(false);
   const [wpmData, setWpmData] = useState<
-    { word: string; wpm: string; isCorrect: boolean }[]
+    { word: string; wpm: number; isCorrect: boolean }[]
   >([]);
   const [generatedWords, setGeneratedWords] = useState<string[]>([]);
   const [numWords, setNumWords] = useState(25);
@@ -120,7 +120,7 @@ const TypingAreaBlock: TypingAreaType = () => {
           ...prevWpmData,
           {
             word: typedActiveWord,
-            wpm: calcWpm(typedLetterCount, timer / 100, 0).toFixed(2),
+            wpm: Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
             isCorrect: typedActiveWord === typedWords[activeWordIndex].word,
           },
         ]);

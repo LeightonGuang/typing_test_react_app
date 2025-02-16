@@ -2,8 +2,10 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import AppSidebar from "@/components/AppSidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import AdBlockDetector from "@/components/AdBlockDetector";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,7 +29,13 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <SidebarProvider defaultOpen={false}>
+              <AppSidebar />
+              <span>
+                <SidebarTrigger />
+                {children}
+              </span>
+            </SidebarProvider>
           </ThemeProvider>
         </AdBlockDetector>
       </body>

@@ -68,6 +68,7 @@ const TypingAreaBlock: TypingAreaType = () => {
   useEffect(() => {
     const randomWordsList = generateWords(numWords);
     setGeneratedWords(randomWordsList);
+    setIsShowChart(localStorage.getItem("isShowChart") === "true");
   }, []);
 
   useEffect(() => {
@@ -248,7 +249,10 @@ const TypingAreaBlock: TypingAreaType = () => {
 
                 <Button
                   className="w-min rounded-sm"
-                  onClick={() => setIsShowChart(!isShowChart)}
+                  onClick={() => {
+                    setIsShowChart(!isShowChart);
+                    localStorage.setItem("isShowChart", String(!isShowChart));
+                  }}
                 >
                   {isShowChart ? "Hide Chart" : "Show Chart"}
                 </Button>

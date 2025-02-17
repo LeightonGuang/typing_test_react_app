@@ -105,6 +105,31 @@ const TypingAreaBlock: TypingAreaType = () => {
       typedWords[activeWordIndex]?.word === typedWords[activeWordIndex]?.typed
     ) {
       setStartTimer(false);
+
+      const wpmDatas = localStorage.getItem("wpmDatas");
+      if (wpmDatas) {
+        const parsedWpmDatas: {
+          word: string;
+          wpm: number;
+          isCorrect: boolean;
+        }[][] = JSON.parse(wpmDatas);
+
+        if (parsedWpmDatas.length < 10) {
+          // add wpm data to local storage
+          localStorage.setItem(
+            "wpmDatas",
+            JSON.stringify([...parsedWpmDatas, wpmData]),
+          );
+        } else if (parsedWpmDatas.length >= 10) {
+          // only store 10 wpm datas
+          localStorage.setItem(
+            "wpmDatas",
+            JSON.stringify([...parsedWpmDatas.slice(1), wpmData]),
+          );
+        }
+      } else if (!wpmDatas) {
+        localStorage.setItem("wpmDatas", JSON.stringify([wpmData]));
+      }
     }
   }, [typedWords]);
 

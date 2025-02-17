@@ -31,10 +31,8 @@ export default function RootLayout({
           >
             <SidebarProvider defaultOpen={false}>
               <AppSidebar />
-              <span>
-                <SidebarTrigger />
-                {children}
-              </span>
+              <SidebarTrigger />
+              {children}
             </SidebarProvider>
           </ThemeProvider>
         </AdBlockDetector>

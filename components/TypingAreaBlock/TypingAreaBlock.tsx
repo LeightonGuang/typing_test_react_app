@@ -18,7 +18,7 @@ const TypingAreaBlock = () => {
   const [wpm, setWpm] = useState(0);
   const [isShowChart, setIsShowChart] = useState(false);
   const [wpmData, setWpmData] = useState<
-    { word: string; wpm: number; isCorrect: boolean }[]
+    { typedWord: string; wpm: number; isCorrect: boolean }[]
   >([]);
   const [generatedWords, setGeneratedWords] = useState<string[]>([]);
   const [numWords, setNumWords] = useState(25);
@@ -108,7 +108,7 @@ const TypingAreaBlock = () => {
       // add last word to wpm data when last word is right automatically
       const newWpmData = [...wpmData];
       newWpmData.push({
-        word: typedWords[activeWordIndex].word,
+        typedWord: typedWords[activeWordIndex].word,
         wpm: Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
         isCorrect: true,
       });
@@ -152,7 +152,7 @@ const TypingAreaBlock = () => {
         setWpmData((prevWpmData) => [
           ...prevWpmData,
           {
-            word: typedActiveWord,
+            typedWord: typedActiveWord,
             wpm: Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
             isCorrect: typedActiveWord === typedWords[activeWordIndex].word,
           },
@@ -183,6 +183,7 @@ const TypingAreaBlock = () => {
             };
             return newTypedWords;
           });
+          setWpmData((prevWpmData) => prevWpmData.slice(0, -1));
         } else if (event.ctrlKey) {
           setTypedActiveWord("");
           setTypedWords((prevTypedWords) => {

@@ -10,7 +10,7 @@ import {
 } from "recharts";
 
 interface Props {
-  wpmData: { word: string; wpm: number; isCorrect: boolean }[];
+  wpmData: { typedWord: string; wpm: number; isCorrect: boolean }[];
 }
 
 const TypingSpeedLineChart = ({ wpmData }: Props) => {
@@ -23,7 +23,7 @@ const TypingSpeedLineChart = ({ wpmData }: Props) => {
           margin={{ top: 16, right: 32, left: 16, bottom: 4 }}
         >
           <XAxis
-            dataKey={"word"}
+            dataKey={"typedWord"}
             axisLine={{ stroke: "#ffffff" }}
             strokeWidth={2}
           />

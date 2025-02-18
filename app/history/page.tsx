@@ -9,16 +9,11 @@ import {
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { WpmDataType } from "@/_types/WpmDataType";
 import TypingSpeedLineChart from "@/components/TypingSpeedLineChart/TypingSpeedLineChart";
 
 const HistoryPage = () => {
-  const [wpmDatas, setWpmDatas] = useState<
-    {
-      word: string;
-      wpm: number;
-      isCorrect: boolean;
-    }[][]
-  >([]);
+  const [wpmDatas, setWpmDatas] = useState<WpmDataType[][]>([]);
 
   const handleDeleteButton = (index: number) => {
     const newWpmDatas = [...wpmDatas];
@@ -33,16 +28,9 @@ const HistoryPage = () => {
   };
 
   useEffect(() => {
-    const localDatas = localStorage.getItem("wpmDatas");
-
-    const parsedLocalDatas: {
-      word: string;
-      wpm: number;
-      isCorrect: boolean;
-    }[][] = JSON.parse(localDatas || "[]");
-
+    const localWpmDatas = localStorage.getItem("wpmDatas");
+    const parsedLocalDatas: WpmDataType[][] = JSON.parse(localWpmDatas || "[]");
     setWpmDatas(parsedLocalDatas);
-    console.log(parsedLocalDatas);
   }, []);
 
   return (

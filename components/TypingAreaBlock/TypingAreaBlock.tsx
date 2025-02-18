@@ -170,7 +170,7 @@ const TypingAreaBlock = () => {
           {
             typedWord: typedActiveWord,
             wpm: Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
-            isCorrect: typedActiveWord === typedWords[activeWordIndex].word,
+            isCorrect: typedActiveWord === typedWords[activeWordIndex]?.word,
           },
         ]);
         setWpm(calcWpm(typedLetterCount, timer / 100, 0));

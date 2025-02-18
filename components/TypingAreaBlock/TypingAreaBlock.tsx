@@ -7,6 +7,7 @@ import { TypingAreaHeader } from "./TypingAreaHeader";
 import { TypingAreaContent } from "./TypingAreaContent";
 import { Card, CardContent, CardFooter } from "../ui/card";
 
+import { WpmDataType } from "@/_types/WpmDataType";
 import { testWordList } from "@/_assets/testWordList";
 import { TypedWordsType } from "@/_types/TypedWordsType";
 import TypingSpeedLineChart from "../TypingSpeedLineChart/TypingSpeedLineChart";
@@ -17,9 +18,7 @@ const TypingAreaBlock = () => {
   const [startTimer, setStartTimer] = useState(false);
   const [wpm, setWpm] = useState(0);
   const [isShowChart, setIsShowChart] = useState(false);
-  const [wpmData, setWpmData] = useState<
-    { typedWord: string; wpm: number; isCorrect: boolean }[]
-  >([]);
+  const [wpmData, setWpmData] = useState<WpmDataType[]>([]);
   const [generatedWords, setGeneratedWords] = useState<string[]>([]);
   const [numWords, setNumWords] = useState(25);
   const [numErrors, setNumErrors] = useState(0);
@@ -61,6 +60,7 @@ const TypingAreaBlock = () => {
     setWpmData([]);
     setStartTimer(false);
     setTypedLetterCount(0);
+    setNumErrors(0);
   };
 
   // generate initial words
@@ -70,6 +70,7 @@ const TypingAreaBlock = () => {
     setIsShowChart(localStorage.getItem("isShowChart") === "true");
   }, []);
 
+  // start timer
   useEffect(() => {
     if (startTimer) {
       const time = setTimeout(() => {
@@ -98,11 +99,12 @@ const TypingAreaBlock = () => {
     );
     setTypedLetterCount(count);
 
-    // stop timer if last word is right
-    if (
-      activeWordIndex === numWords - 1 &&
-      typedWords[activeWordIndex]?.word === typedWords[activeWordIndex]?.typed
-    ) {
+    const isLastWordCorrect =
+      numWords === activeWordIndex + 1 &&
+      typedWords[activeWordIndex]?.word === typedWords[activeWordIndex]?.typed;
+
+    if (isLastWordCorrect) {
+      // stop timer if last word is right
       setStartTimer(false);
 
       // add last word to wpm data when last word is right automatically
@@ -113,13 +115,27 @@ const TypingAreaBlock = () => {
         isCorrect: true,
       });
 
+      setTypedWords((prevTypedWords) => {
+        const newTypedWords = [...prevTypedWords];
+        newTypedWords[activeWordIndex].typed = typedActiveWord;
+        return newTypedWords;
+      });
+
+      setActiveWordIndex((prevActiveWordIndex) => ++prevActiveWordIndex);
+
+      setNumErrors(() => {
+        return typedWords.reduce((total, word) => {
+          if (word.typed !== word.word && word.typed !== "") {
+            return ++total;
+          } else {
+            return total;
+          }
+        }, 0);
+      });
+
       const wpmDatas = localStorage.getItem("wpmDatas");
       if (wpmDatas) {
-        const parsedWpmDatas: {
-          word: string;
-          wpm: number;
-          isCorrect: boolean;
-        }[][] = JSON.parse(wpmDatas);
+        const parsedWpmDatas: WpmDataType[] = JSON.parse(wpmDatas);
 
         if (parsedWpmDatas.length < 10) {
           // add wpm data to local storage

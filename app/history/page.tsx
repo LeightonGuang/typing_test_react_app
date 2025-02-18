@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import TypingSpeedLineChart from "@/components/TypingSpeedLineChart/TypingSpeedLineChart";
 import { Button } from "@/components/ui/button";
+import TypingSpeedLineChart from "@/components/TypingSpeedLineChart/TypingSpeedLineChart";
 
 const HistoryPage = () => {
   const [wpmDatas, setWpmDatas] = useState<
@@ -19,6 +19,18 @@ const HistoryPage = () => {
       isCorrect: boolean;
     }[][]
   >([]);
+
+  const handleDeleteButton = (index: number) => {
+    const newWpmDatas = [...wpmDatas];
+    newWpmDatas.splice(index, 1);
+    setWpmDatas(newWpmDatas);
+    localStorage.setItem("wpmDatas", JSON.stringify(newWpmDatas));
+  };
+
+  const handleDeleteAllButton = () => {
+    setWpmDatas([]);
+    localStorage.setItem("wpmDatas", JSON.stringify([]));
+  };
 
   useEffect(() => {
     const localDatas = localStorage.getItem("wpmDatas");
@@ -35,35 +47,52 @@ const HistoryPage = () => {
 
   return (
     <section className="flex h-dvh w-dvw justify-center pt-4">
-      <div className="flex flex-col gap-4">
-        <h1 className="text-3xl">History</h1>
-        {wpmDatas.map((wpmData, index) => (
-          <Card key={index} className="m-4 min-w-[50rem] rounded-none">
-            <CardHeader>
-              <div className="flex justify-between">
-                <h2 className="text-2xl">Test {index + 1}</h2>
-
-                <div className="flex gap-2">
-                  <Badge className="rounded-sm" variant={"secondary"}>
-                    Words: {wpmData.length}
-                  </Badge>
-
-                  <Badge className="rounded-sm" variant={"secondary"}>
-                    wpm: {wpmData[wpmData.length - 1].wpm}
-                  </Badge>
-                </div>
-              </div>
-            </CardHeader>
-
-            <CardContent>
-              <TypingSpeedLineChart wpmData={wpmData} />
-            </CardContent>
-          </Card>
-        ))}
-
-        <div>
-          <Button variant={"destructive"}>Delete All</Button>
+      <div className="m-4 flex min-w-[50rem] flex-col gap-4">
+        <div className="mb-4 flex justify-between">
+          <h1 className="text-3xl">Typing History</h1>
+          <Button
+            variant={"destructive"}
+            onClick={handleDeleteAllButton}
+            disabled={wpmDatas.length === 0}
+          >
+            Delete All
+          </Button>
         </div>
+
+        {wpmDatas.length === 0
+          ? "No history"
+          : wpmDatas.map((wpmData, index) => (
+              <Card key={index} className="min-w-[50rem] rounded-none">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl">Test {index + 1}</h2>
+
+                    <div className="flex items-center gap-2">
+                      <Badge className="rounded-sm" variant={"secondary"}>
+                        Words: {wpmData.length}
+                      </Badge>
+
+                      <Badge className="rounded-sm" variant={"secondary"}>
+                        wpm: {wpmData[wpmData.length - 1].wpm}
+                      </Badge>
+
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => {
+                          handleDeleteButton(index);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <TypingSpeedLineChart wpmData={wpmData} />
+                </CardContent>
+              </Card>
+            ))}
       </div>
     </section>
   );

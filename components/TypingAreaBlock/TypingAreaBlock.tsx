@@ -1,18 +1,17 @@
 "use client";
 
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
 import { Separator } from "../ui/separator";
+import { useEffect, useState } from "react";
 import { TypingAreaHeader } from "./TypingAreaHeader";
 import { TypingAreaContent } from "./TypingAreaContent";
 import { Card, CardContent, CardFooter } from "../ui/card";
 
 import { testWordList } from "@/_assets/testWordList";
-import { TypingAreaType } from "@/_types/TypingAreaType";
 import { TypedWordsType } from "@/_types/TypedWordsType";
 import TypingSpeedLineChart from "../TypingSpeedLineChart/TypingSpeedLineChart";
 
-const TypingAreaBlock: TypingAreaType = () => {
+const TypingAreaBlock = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [timer, setTimer] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
@@ -106,6 +105,14 @@ const TypingAreaBlock: TypingAreaType = () => {
     ) {
       setStartTimer(false);
 
+      // add last word to wpm data when last word is right automatically
+      const newWpmData = [...wpmData];
+      newWpmData.push({
+        word: typedWords[activeWordIndex].word,
+        wpm: Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
+        isCorrect: true,
+      });
+
       const wpmDatas = localStorage.getItem("wpmDatas");
       if (wpmDatas) {
         const parsedWpmDatas: {
@@ -118,7 +125,7 @@ const TypingAreaBlock: TypingAreaType = () => {
           // add wpm data to local storage
           localStorage.setItem(
             "wpmDatas",
-            JSON.stringify([...parsedWpmDatas, wpmData]),
+            JSON.stringify([...parsedWpmDatas, newWpmData]),
           );
         } else if (parsedWpmDatas.length >= 10) {
           // only store 10 wpm datas
@@ -261,7 +268,7 @@ const TypingAreaBlock: TypingAreaType = () => {
 
           <CardFooter className="p-4">
             <div className="flex w-full justify-center">
-              <div className="flex gap-4">
+              <div className="flex gap-2">
                 <Button
                   className="w-min rounded-sm"
                   onClick={() => {
@@ -274,6 +281,7 @@ const TypingAreaBlock: TypingAreaType = () => {
 
                 <Button
                   className="w-min rounded-sm"
+                  variant={"secondary"}
                   onClick={() => {
                     setIsShowChart(!isShowChart);
                     localStorage.setItem("isShowChart", String(!isShowChart));

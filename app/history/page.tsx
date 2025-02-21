@@ -49,11 +49,11 @@ const HistoryPage = () => {
 
         {wpmDatas.length === 0
           ? "No history"
-          : wpmDatas.map((wpmData, index) => (
+          : [...wpmDatas].reverse().map((wpmData, index) => (
               <Card key={index} className="min-w-[50rem] rounded-none">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <h2 className="text-2xl">Test {index + 1}</h2>
+                    <h2 className="text-2xl">Test {10 - index}</h2>
 
                     <div className="flex items-center gap-2">
                       <Badge className="rounded-sm" variant={"secondary"}>

@@ -7,6 +7,7 @@ import { TypingAreaHeader } from "./TypingAreaHeader";
 import { TypingAreaContent } from "./TypingAreaContent";
 import { Card, CardContent, CardFooter } from "../ui/card";
 
+import calcWpm from "@/utils/calcWpm";
 import { WpmDataType } from "@/_types/WpmDataType";
 import { testWordList } from "@/_assets/testWordList";
 import { TypedWordsType } from "@/_types/TypedWordsType";
@@ -20,25 +21,13 @@ const TypingAreaBlock = () => {
   const [isShowChart, setIsShowChart] = useState(false);
   const [wpmData, setWpmData] = useState<WpmDataType[]>([]);
   const [generatedWords, setGeneratedWords] = useState<string[]>([]);
-  const [numWords, setNumWords] = useState(25);
+  const [targetNumWords, setTargetNumWords] = useState(25);
   const [numErrors, setNumErrors] = useState(0);
   const [activeCharIndex, setActiveCharIndex] = useState(0);
   const [activeWordIndex, setActiveWordIndex] = useState(0);
-  const [typedActiveWord, setTypedActiveWord] = useState<string>("");
+  const [inputValue, setInputValue] = useState<string>("");
   const [typedWords, setTypedWords] = useState<TypedWordsType>([]);
   const [typedLetterCount, setTypedLetterCount] = useState(0);
-
-  const calcWpm = (
-    totalLettersTyped: number,
-    timeInSeconds: number,
-    errors: number,
-  ) => {
-    const rawWpm = totalLettersTyped / 5 / (timeInSeconds / 60);
-
-    const netWpm = rawWpm - errors / (timeInSeconds / 60);
-
-    return netWpm;
-  };
 
   const generateWords = (numWords: number) => {
     const randomWordsList: string[] = Array.from({ length: numWords }).map(
@@ -53,7 +42,7 @@ const TypingAreaBlock = () => {
   const resetTypingArea = () => {
     setActiveCharIndex(0);
     setActiveWordIndex(0);
-    setTypedActiveWord("");
+    setInputValue("");
     setTypedWords([]);
     setTimer(0);
     setWpm(0);
@@ -65,7 +54,7 @@ const TypingAreaBlock = () => {
 
   // generate initial words
   useEffect(() => {
-    const randomWordsList = generateWords(numWords);
+    const randomWordsList = generateWords(targetNumWords);
     setGeneratedWords(randomWordsList);
     setIsShowChart(localStorage.getItem("isShowChart") === "true");
   }, []);
@@ -84,7 +73,7 @@ const TypingAreaBlock = () => {
   // reset typing area
   useEffect(() => {
     resetTypingArea();
-  }, [numWords]);
+  }, [targetNumWords]);
 
   // set typed words
   useEffect(() => {
@@ -97,32 +86,22 @@ const TypingAreaBlock = () => {
       (total, word) => total + word.typed.length,
       0,
     );
+    console.log(count);
     setTypedLetterCount(count);
 
     const isLastWordCorrect =
-      numWords === activeWordIndex + 1 &&
+      targetNumWords === activeWordIndex + 1 &&
       typedWords[activeWordIndex]?.word === typedWords[activeWordIndex]?.typed;
 
     if (isLastWordCorrect) {
-      // stop timer if last word is right
+      // detect if last word is right
       setStartTimer(false);
-
-      // add last word to wpm data when last word is right automatically
-      const newWpmData = [...wpmData];
-      newWpmData.push({
-        typedWord: typedWords[activeWordIndex].word,
-        wpm: Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
-        isCorrect: true,
-      });
-
       setTypedWords((prevTypedWords) => {
         const newTypedWords = [...prevTypedWords];
-        newTypedWords[activeWordIndex].typed = typedActiveWord;
+        newTypedWords[activeWordIndex].typed = inputValue;
         return newTypedWords;
       });
-
-      setActiveWordIndex((prevActiveWordIndex) => ++prevActiveWordIndex);
-
+      setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex + 1);
       setNumErrors(() => {
         return typedWords.reduce((total, word) => {
           if (word.typed !== word.word && word.typed !== "") {
@@ -132,128 +111,40 @@ const TypingAreaBlock = () => {
           }
         }, 0);
       });
+      // add last word to wpm data when last word is right automatically
+      const updatedWpmData = [...wpmData];
+      updatedWpmData.push({
+        typedWord: typedWords[activeWordIndex].word,
+        wpm: Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
+        isCorrect: true,
+      });
 
-      const wpmDatas = localStorage.getItem("wpmDatas");
-      if (wpmDatas) {
-        const parsedWpmDatas: WpmDataType[] = JSON.parse(wpmDatas);
+      setWpmData(updatedWpmData);
+
+      // TODO: add date to each wpm data
+      const localWpmDatas = localStorage.getItem("wpmDatas");
+      if (localWpmDatas) {
+        const parsedWpmDatas: WpmDataType[] = JSON.parse(localWpmDatas);
 
         if (parsedWpmDatas.length < 10) {
           // add wpm data to local storage
           localStorage.setItem(
             "wpmDatas",
-            JSON.stringify([...parsedWpmDatas, newWpmData]),
+            JSON.stringify([...parsedWpmDatas, updatedWpmData]),
           );
         } else if (parsedWpmDatas.length >= 10) {
           // only store 10 wpm datas
           localStorage.setItem(
             "wpmDatas",
-            JSON.stringify([...parsedWpmDatas.slice(1), wpmData]),
+            JSON.stringify([...parsedWpmDatas.slice(1), updatedWpmData]),
           );
         }
-      } else if (!wpmDatas) {
+      } else if (!localWpmDatas) {
         localStorage.setItem("wpmDatas", JSON.stringify([wpmData]));
       }
     }
+    console.log(typedWords);
   }, [typedWords]);
-
-  // handle typing
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const letterRegex = /^[a-zA-Z]$/;
-
-      if (event.key === " ") {
-        // Handle spacebar
-        setActiveCharIndex(0);
-        setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex + 1);
-        setWpmData((prevWpmData) => [
-          ...prevWpmData,
-          {
-            typedWord: typedActiveWord,
-            wpm: Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
-            isCorrect: typedActiveWord === typedWords[activeWordIndex]?.word,
-          },
-        ]);
-        setWpm(calcWpm(typedLetterCount, timer / 100, 0));
-        setTypedActiveWord("");
-        setNumErrors(() => {
-          return typedWords.reduce((total, word) => {
-            if (word.typed !== word.word && word.typed !== "") {
-              return ++total;
-            } else {
-              return total;
-            }
-          }, 0);
-        });
-      } else if (event.key === "Backspace") {
-        // Handle backspace
-        if (activeWordIndex > 0 && activeCharIndex === 0) {
-          // handle backspace where you are at the start of a word
-          setTypedActiveWord(typedWords[activeWordIndex - 1].typed);
-          setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex - 1);
-          setActiveCharIndex(typedWords[activeWordIndex - 1].typed.length);
-          setTypedWords((prevTypedWords) => {
-            const newTypedWords = [...prevTypedWords];
-            newTypedWords[activeWordIndex] = {
-              ...newTypedWords[activeWordIndex],
-              typed: "",
-            };
-            return newTypedWords;
-          });
-          setWpmData((prevWpmData) => prevWpmData.slice(0, -1));
-        } else if (event.ctrlKey) {
-          setTypedActiveWord("");
-          setTypedWords((prevTypedWords) => {
-            const newTypedWords = [...prevTypedWords];
-            newTypedWords[activeWordIndex] = {
-              ...newTypedWords[activeWordIndex],
-              typed: "",
-            };
-            return newTypedWords;
-          });
-          setActiveCharIndex(0);
-        }
-
-        if (activeCharIndex > 0) {
-          // handle backspace where you are in the middle of a word
-          setActiveCharIndex((prevActiveCharIndex) => prevActiveCharIndex - 1);
-          setTypedActiveWord((prevTypedActiveWord) =>
-            prevTypedActiveWord.slice(0, -1),
-          );
-          setTypedWords((prevTypedWords) => {
-            const newTypedWords = [...prevTypedWords];
-            newTypedWords[activeWordIndex] = {
-              ...newTypedWords[activeWordIndex],
-              typed: newTypedWords[activeWordIndex].typed.slice(0, -1),
-            };
-            return newTypedWords;
-          });
-        }
-      } else if (event.key.match(letterRegex)) {
-        // Handle regular characters
-        if (!startTimer) setStartTimer(true);
-        setActiveCharIndex(typedActiveWord.length + 1);
-        setTypedActiveWord(
-          (prevTypedActiveWord) => prevTypedActiveWord + event.key,
-        );
-        setTypedWords((prevTypedWords) => {
-          const newTypedWords = [...prevTypedWords];
-          newTypedWords[activeWordIndex] = {
-            ...newTypedWords[activeWordIndex],
-            typed: newTypedWords[activeWordIndex].typed + event.key,
-          };
-          return newTypedWords;
-        });
-      }
-    };
-
-    if (isFocused) {
-      document.addEventListener("keydown", handleKeyDown);
-    } else if (!isFocused) {
-      document.removeEventListener("keydown", handleKeyDown);
-    }
-
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [activeCharIndex, activeWordIndex, typedActiveWord, isFocused]);
 
   return (
     <section>
@@ -267,18 +158,32 @@ const TypingAreaBlock = () => {
             setGeneratedWords={setGeneratedWords}
             activeWordIndex={activeWordIndex}
             numErrors={numErrors}
-            setNumWords={setNumWords}
+            setTargetNumWords={setTargetNumWords}
           />
 
           <Separator />
 
           <TypingAreaContent
-            typedWords={typedWords}
+            isFocused={isFocused}
             activeCharIndex={activeCharIndex}
             activeWordIndex={activeWordIndex}
             generatedWords={generatedWords}
-            isFocused={isFocused}
+            inputValue={inputValue}
+            startTimer={startTimer}
+            setNumErrors={setNumErrors}
+            setInputValue={setInputValue}
             setIsFocused={setIsFocused}
+            setTypedWords={setTypedWords}
+            setActiveCharIndex={setActiveCharIndex}
+            setActiveWordIndex={setActiveWordIndex}
+            setWpm={setWpm}
+            setWpmData={setWpmData}
+            setStartTimer={setStartTimer}
+            timer={timer}
+            typedLetterCount={typedLetterCount}
+            typedWords={typedWords}
+            wpmData={wpmData}
+            targetNumWords={targetNumWords}
           />
 
           <Separator />
@@ -290,7 +195,7 @@ const TypingAreaBlock = () => {
                   className="w-min rounded-sm"
                   onClick={() => {
                     resetTypingArea();
-                    setGeneratedWords(generateWords(numWords));
+                    setGeneratedWords(generateWords(targetNumWords));
                   }}
                 >
                   Restart

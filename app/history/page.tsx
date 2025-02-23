@@ -6,6 +6,7 @@ import {
   CardFooter,
   CardContent,
 } from "@/components/ui/card";
+import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,16 +16,30 @@ import TypingSpeedLineChart from "@/components/TypingSpeedLineChart/TypingSpeedL
 const HistoryPage = () => {
   const [wpmDatas, setWpmDatas] = useState<WpmDataType[][]>([]);
 
-  const handleDeleteButton = (index: number) => {
-    const newWpmDatas = [...wpmDatas];
-    newWpmDatas.splice(index, 1);
-    setWpmDatas(newWpmDatas);
-    localStorage.setItem("wpmDatas", JSON.stringify(newWpmDatas));
+  const handleDeleteAllButton = () => {
+    if (window.confirm("Are you sure you want to delete all history?")) {
+      setWpmDatas([]);
+      localStorage.setItem("wpmDatas", JSON.stringify([]));
+      toast("All history deleted");
+    } else {
+      toast("Canceled delete all history");
+    }
   };
 
-  const handleDeleteAllButton = () => {
-    setWpmDatas([]);
-    localStorage.setItem("wpmDatas", JSON.stringify([]));
+  const handleDeleteButton = (index: number) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete the history for Test ${wpmDatas.length - index}?`,
+      )
+    ) {
+      const newWpmDatas = [...wpmDatas];
+      newWpmDatas.splice(index, 1);
+      setWpmDatas(newWpmDatas);
+      localStorage.setItem("wpmDatas", JSON.stringify(newWpmDatas));
+      toast("History deleted");
+    } else {
+      toast("Canceled");
+    }
   };
 
   useEffect(() => {
@@ -53,7 +68,7 @@ const HistoryPage = () => {
               <Card key={index} className="min-w-[50rem] rounded-none">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <h2 className="text-2xl">Test {10 - index}</h2>
+                    <h2 className="text-2xl">Test {wpmDatas.length - index}</h2>
 
                     <div className="flex items-center gap-2">
                       <Badge className="rounded-sm" variant={"secondary"}>

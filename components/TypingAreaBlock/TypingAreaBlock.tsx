@@ -7,13 +7,16 @@ import { TypingAreaHeader } from "./TypingAreaHeader";
 import { TypingAreaContent } from "./TypingAreaContent";
 import { Card, CardContent, CardFooter } from "../ui/card";
 
+import { toast } from "sonner";
 import calcWpm from "@/utils/calcWpm";
+import { useRouter } from "next/navigation";
 import { WpmDataType } from "@/_types/WpmDataType";
 import { testWordList } from "@/_assets/testWordList";
 import { TypedWordsType } from "@/_types/TypedWordsType";
 import TypingSpeedLineChart from "../TypingSpeedLineChart/TypingSpeedLineChart";
 
 const TypingAreaBlock = () => {
+  const router = useRouter();
   const [isFocused, setIsFocused] = useState(false);
   const [timer, setTimer] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
@@ -80,13 +83,13 @@ const TypingAreaBlock = () => {
     setTypedWords(generatedWords.map((word) => ({ word: word, typed: "" })));
   }, [generatedWords]);
 
-  // get typed letter count
+  // handle typed word change 
   useEffect(() => {
+    // get typed letter count
     const count = typedWords.reduce(
       (total, word) => total + word.typed.length,
       0,
     );
-    console.log(count);
     setTypedLetterCount(count);
 
     const isLastWordCorrect =
@@ -101,6 +104,7 @@ const TypingAreaBlock = () => {
         newTypedWords[activeWordIndex].typed = inputValue;
         return newTypedWords;
       });
+      setWpm(calcWpm(typedLetterCount, timer / 100, 0));
       setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex + 1);
       setNumErrors(() => {
         return typedWords.reduce((total, word) => {
@@ -142,8 +146,20 @@ const TypingAreaBlock = () => {
       } else if (!localWpmDatas) {
         localStorage.setItem("wpmDatas", JSON.stringify([wpmData]));
       }
+
+      toast("Finished", {
+        description:
+          `Your typing speed for ${targetNumWords} words is ` +
+          calcWpm(typedLetterCount, timer / 100, 0).toFixed(2) +
+          " WPM",
+        action: {
+          label: "History",
+          onClick: () => {
+            router.push("/history");
+          },
+        },
+      });
     }
-    console.log(typedWords);
   }, [typedWords]);
 
   return (

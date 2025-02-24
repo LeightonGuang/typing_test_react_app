@@ -11,6 +11,7 @@ interface Props {
   generatedWords: string[];
   inputValue: string;
   isFocused: boolean;
+  numErrors: number;
   setNumErrors: React.Dispatch<React.SetStateAction<number>>;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
@@ -43,11 +44,12 @@ export const TypingAreaContent = ({
   setActiveCharIndex,
   isFocused,
   setIsFocused,
+  numErrors,
+  setNumErrors,
   timer,
   generatedWords,
   typedLetterCount,
   setWpm,
-  setNumErrors,
   targetNumWords,
 }: Props) => {
   const lettersRegex = /^[a-zA-Z]+$/;
@@ -58,48 +60,33 @@ export const TypingAreaContent = ({
     setIsFocused(true);
   };
 
-  const handleInputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // setInputValue(value);
-
-    console.log(value, inputValue);
-  };
-
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const keyPressed = e.key;
     console.log("keyPressed: ", keyPressed);
 
+    // stop typing if all words have been typed
     if (wpmData.length === targetNumWords) return;
 
     if (keyPressed === " ") {
       // handle spacebar
       e.preventDefault();
 
-      console.log(
-        typedLetterCount,
-        timer / 100,
-        "wpm: ",
-        Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
-      );
       setInputValue("");
       setActiveCharIndex(0);
       setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex + 1);
       setWpmData((prevWpmData) => {
-        console.log(
-          "isCorrect: ",
-          inputValue + " === " + typedWords[activeWordIndex]?.word,
-          inputValue === typedWords[activeWordIndex]?.word,
-        );
         return [
           ...prevWpmData,
           {
             typedWord: inputValue,
-            wpm: Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
+            wpm: Number(
+              calcWpm(typedLetterCount, timer / 100, numErrors).toFixed(2),
+            ),
             isCorrect: inputValue === typedWords[activeWordIndex]?.word,
           },
         ];
       });
-      setWpm(calcWpm(typedLetterCount, timer / 100, 0));
+      setWpm(calcWpm(typedLetterCount, timer / 100, numErrors));
       setNumErrors(() =>
         typedWords.reduce((total, word) => {
           if (word.typed !== word.word && word.typed !== "") {
@@ -116,9 +103,30 @@ export const TypingAreaContent = ({
       if (activeCharIndex <= 0 && activeWordIndex <= 0) return;
 
       if (e.ctrlKey) {
-        // setInputValue(typedWords[activeWordIndex].typed);
-        // setActiveCharIndex(typedWords[activeWordIndex].typed.length);
-        // setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex - 1);
+        if (activeCharIndex > 0) {
+          setInputValue("");
+          setActiveCharIndex(0);
+          setTypedWords((prevTypedWords) => {
+            const newTypedWords = [...prevTypedWords];
+            newTypedWords[activeWordIndex] = {
+              ...newTypedWords[activeWordIndex],
+              typed: "",
+            };
+            return newTypedWords;
+          });
+        } else if (activeWordIndex > 0 && activeCharIndex === 0) {
+          setInputValue("");
+          setActiveCharIndex(0);
+          setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex - 1);
+          setTypedWords((prevTypedWords) => {
+            const newTypedWords = [...prevTypedWords];
+            newTypedWords[activeWordIndex - 1] = {
+              ...newTypedWords[activeWordIndex - 1],
+              typed: "",
+            };
+            return newTypedWords;
+          });
+        }
       } else if (activeCharIndex > 0) {
         // handle normal backspace
         setActiveCharIndex((prevActiveCharIndex) => prevActiveCharIndex - 1);
@@ -145,6 +153,8 @@ export const TypingAreaContent = ({
         });
         setWpmData((prevWpmData) => prevWpmData.slice(0, -1));
       }
+    } else if (keyPressed.length !== 1) {
+      return;
     } else if (
       lettersRegex.test(keyPressed) &&
       keyPressed !== "Control" &&
@@ -185,10 +195,6 @@ export const TypingAreaContent = ({
       });
     }
   }, [inputValue]);
-
-  useEffect(() => {
-    console.log("wpmData:", wpmData);
-  }, [wpmData]);
 
   return (
     <div
@@ -249,7 +255,6 @@ export const TypingAreaContent = ({
         type="text"
         value={inputValue}
         ref={inputRef}
-        onChange={handleInputOnChange}
         onKeyDown={handleInputKeyDown}
       />
     </div>

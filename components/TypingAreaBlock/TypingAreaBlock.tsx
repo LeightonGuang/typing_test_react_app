@@ -83,7 +83,7 @@ const TypingAreaBlock = () => {
     setTypedWords(generatedWords.map((word) => ({ word: word, typed: "" })));
   }, [generatedWords]);
 
-  // handle typed word change 
+  // handle typed word change
   useEffect(() => {
     // get typed letter count
     const count = typedWords.reduce(
@@ -104,7 +104,7 @@ const TypingAreaBlock = () => {
         newTypedWords[activeWordIndex].typed = inputValue;
         return newTypedWords;
       });
-      setWpm(calcWpm(typedLetterCount, timer / 100, 0));
+      setWpm(calcWpm(typedLetterCount, timer / 100, numErrors));
       setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex + 1);
       setNumErrors(() => {
         return typedWords.reduce((total, word) => {
@@ -119,7 +119,9 @@ const TypingAreaBlock = () => {
       const updatedWpmData = [...wpmData];
       updatedWpmData.push({
         typedWord: typedWords[activeWordIndex].word,
-        wpm: Number(calcWpm(typedLetterCount, timer / 100, 0).toFixed(2)),
+        wpm: Number(
+          calcWpm(typedLetterCount, timer / 100, numErrors).toFixed(2),
+        ),
         isCorrect: true,
       });
 
@@ -150,7 +152,7 @@ const TypingAreaBlock = () => {
       toast("Finished", {
         description:
           `Your typing speed for ${targetNumWords} words is ` +
-          calcWpm(typedLetterCount, timer / 100, 0).toFixed(2) +
+          calcWpm(typedLetterCount, timer / 100, numErrors).toFixed(2) +
           " WPM",
         action: {
           label: "History",
@@ -186,6 +188,7 @@ const TypingAreaBlock = () => {
             generatedWords={generatedWords}
             inputValue={inputValue}
             startTimer={startTimer}
+            numErrors={numErrors}
             setNumErrors={setNumErrors}
             setInputValue={setInputValue}
             setIsFocused={setIsFocused}

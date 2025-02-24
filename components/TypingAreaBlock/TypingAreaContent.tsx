@@ -249,6 +249,7 @@ export const TypingAreaContent = ({
       })}
 
       <input
+        readOnly
         className="h-0 w-0"
         type="text"
         value={inputValue}

@@ -45,7 +45,13 @@ const TypingSpeedLineChart = ({ wpmData }: Props) => {
             dataKey={"wpm"}
             dot={({ cx, cy, payload }) => {
               return payload.isCorrect ? (
-                <circle cx={cx} cy={cy} r={3} fill={"#7BC950"} />
+                <circle
+                  key={payload.typedWord + payload.wpm}
+                  cx={cx}
+                  cy={cy}
+                  r={3}
+                  fill={"#7BC950"}
+                />
               ) : (
                 <circle cx={cx} cy={cy} r={3} fill={"#F71735"} />
               );

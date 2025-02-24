@@ -32,8 +32,7 @@ const HistoryPage = () => {
         `Are you sure you want to delete the history for Test ${wpmDatas.length - index}?`,
       )
     ) {
-      const newWpmDatas = [...wpmDatas];
-      newWpmDatas.splice(index, 1);
+      const newWpmDatas = wpmDatas.filter((_, i) => i !== index);
       setWpmDatas(newWpmDatas);
       localStorage.setItem("wpmDatas", JSON.stringify(newWpmDatas));
       toast("History deleted");
@@ -82,7 +81,7 @@ const HistoryPage = () => {
                       <Button
                         variant={"destructive"}
                         onClick={() => {
-                          handleDeleteButton(index);
+                          handleDeleteButton(wpmDatas.length - index - 1);
                         }}
                       >
                         Delete

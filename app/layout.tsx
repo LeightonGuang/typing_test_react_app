@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "The Next Typer",
-  description: "A typing test website with Next.js",
+  description: "A revamped version of an existing typing test website",
 };
 
 export default function RootLayout({

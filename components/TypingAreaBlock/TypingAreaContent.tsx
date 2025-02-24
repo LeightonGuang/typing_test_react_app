@@ -62,7 +62,7 @@ export const TypingAreaContent = ({
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const keyPressed = e.key;
-    console.log("keyPressed: ", keyPressed);
+    // console.log("keyPressed: ", keyPressed);
 
     // stop typing if all words have been typed
     if (wpmData.length === targetNumWords) return;
@@ -70,6 +70,9 @@ export const TypingAreaContent = ({
     if (keyPressed === " ") {
       // handle spacebar
       e.preventDefault();
+
+      // stop activeWordIndex from going out of bounds
+      if (activeWordIndex === targetNumWords - 1) return;
 
       setInputValue("");
       setActiveCharIndex(0);
@@ -170,11 +173,6 @@ export const TypingAreaContent = ({
     inputRef.current?.focus();
     setIsFocused(true);
   }, [generatedWords]);
-
-  useEffect(() => {
-    console.log("activeWordIndex:", activeWordIndex);
-    console.log("activeCharIndex:", activeCharIndex);
-  }, [activeCharIndex, activeWordIndex]);
 
   useEffect(() => {
     if (!startTimer) setStartTimer(true);

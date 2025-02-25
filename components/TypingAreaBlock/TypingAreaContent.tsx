@@ -175,7 +175,7 @@ export const TypingAreaContent = ({
   }, [generatedWords]);
 
   useEffect(() => {
-    if (!startTimer) setStartTimer(true);
+    if (!startTimer && inputValue.length > 0) setStartTimer(true);
     if (inputValue.length === 0) setActiveCharIndex(0);
 
     if (lettersRegex.test(inputValue.trim())) {

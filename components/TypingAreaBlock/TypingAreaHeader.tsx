@@ -1,28 +1,44 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { CardHeader } from "../ui/card";
 
 interface Props {
-  timer: number;
   wpm: number;
+  timer: number;
+  numErrors: number;
+  activeWordIndex: number;
   resetTypingArea: () => void;
+  setTargetNumWords: React.Dispatch<React.SetStateAction<number>>;
   generateWords: (numWords: number) => string[];
   setGeneratedWords: React.Dispatch<React.SetStateAction<string[]>>;
-  activeWordIndex: number;
-  numErrors: number;
-  setTargetNumWords: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const TypingAreaHeader = ({
-  timer,
   wpm,
+  timer,
+  numErrors,
+  activeWordIndex,
   resetTypingArea,
+  setTargetNumWords,
   generateWords,
   setGeneratedWords,
-  activeWordIndex,
-  numErrors,
-  setTargetNumWords,
 }: Props) => {
-  const handleWordNumberButton = (numWords: number) => {
+  const [toggleOn, setToggleOn] = useState({
+    25: true,
+    50: false,
+    100: false,
+  });
+
+  const handleToggleChange = (numWords: number) => {
+    console.log("toggle change ", numWords);
+
+    setToggleOn({
+      25: 25 === numWords,
+      50: 50 === numWords,
+      100: 100 === numWords,
+    });
     resetTypingArea();
     setGeneratedWords(generateWords(numWords));
     setTargetNumWords(numWords);
@@ -57,24 +73,27 @@ export const TypingAreaHeader = ({
         <div className="flex gap-2">
           <Button
             className="w-full rounded-none"
+            disabled={toggleOn[25]}
             variant={"outline"}
-            onClick={() => handleWordNumberButton(25)}
+            onClick={() => handleToggleChange(25)}
           >
             <span>25 words</span>
           </Button>
 
           <Button
             className="w-full rounded-none"
+            disabled={toggleOn[50]}
             variant={"outline"}
-            onClick={() => handleWordNumberButton(50)}
+            onClick={() => handleToggleChange(50)}
           >
             <span>50 words</span>
           </Button>
 
           <Button
             className="w-full rounded-none"
+            disabled={toggleOn[100]}
             variant={"outline"}
-            onClick={() => handleWordNumberButton(100)}
+            onClick={() => handleToggleChange(100)}
           >
             <span>100 words</span>
           </Button>

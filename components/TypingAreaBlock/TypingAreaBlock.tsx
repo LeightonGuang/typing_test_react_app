@@ -86,6 +86,8 @@ const TypingAreaBlock = () => {
   // handle typed word change
   useEffect(() => {
     // get typed letter count
+    const dateTime = new Date(Date.now()).toLocaleString();
+
     const count = typedWords.reduce(
       (total, word) => total + word.typed.length,
       0,
@@ -127,7 +129,6 @@ const TypingAreaBlock = () => {
 
       setWpmData(updatedWpmData);
 
-      // TODO: add date to each wpm data
       const localWpmDatas = localStorage.getItem("wpmDatas");
       if (localWpmDatas) {
         const parsedWpmDatas: WpmDataType[] = JSON.parse(localWpmDatas);
@@ -136,17 +137,32 @@ const TypingAreaBlock = () => {
           // add wpm data to local storage
           localStorage.setItem(
             "wpmDatas",
-            JSON.stringify([...parsedWpmDatas, updatedWpmData]),
+            JSON.stringify([
+              ...parsedWpmDatas,
+              {
+                testDateTime: dateTime,
+                words: updatedWpmData,
+              },
+            ]),
           );
         } else if (parsedWpmDatas.length >= 10) {
           // only store 10 wpm datas
           localStorage.setItem(
             "wpmDatas",
-            JSON.stringify([...parsedWpmDatas.slice(1), updatedWpmData]),
+            JSON.stringify([
+              ...parsedWpmDatas.slice(1),
+              {
+                testDateTime: dateTime,
+                words: updatedWpmData,
+              },
+            ]),
           );
         }
       } else if (!localWpmDatas) {
-        localStorage.setItem("wpmDatas", JSON.stringify([wpmData]));
+        localStorage.setItem(
+          "wpmDatas",
+          JSON.stringify([{ testDateTime: dateTime, words: updatedWpmData }]),
+        );
       }
 
       toast("Finished", {

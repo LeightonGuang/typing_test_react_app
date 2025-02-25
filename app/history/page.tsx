@@ -13,8 +13,13 @@ import { Button } from "@/components/ui/button";
 import { WpmDataType } from "@/_types/WpmDataType";
 import TypingSpeedLineChart from "@/components/TypingSpeedLineChart/TypingSpeedLineChart";
 
+interface WpmDataInfoType {
+  testDateTime: string;
+  words: WpmDataType[];
+}
+[];
 const HistoryPage = () => {
-  const [wpmDatas, setWpmDatas] = useState<WpmDataType[][]>([]);
+  const [wpmDatas, setWpmDatas] = useState<WpmDataInfoType[]>([]);
 
   const handleDeleteAllButton = () => {
     if (window.confirm("Are you sure you want to delete all history?")) {
@@ -43,7 +48,9 @@ const HistoryPage = () => {
 
   useEffect(() => {
     const localWpmDatas = localStorage.getItem("wpmDatas");
-    const parsedLocalDatas: WpmDataType[][] = JSON.parse(localWpmDatas || "[]");
+    const parsedLocalDatas: WpmDataInfoType[] = JSON.parse(
+      localWpmDatas || "[]",
+    );
     setWpmDatas(parsedLocalDatas);
   }, []);
 
@@ -71,11 +78,11 @@ const HistoryPage = () => {
 
                     <div className="flex items-center gap-2">
                       <Badge className="rounded-sm" variant={"secondary"}>
-                        Words: {wpmData.length}
+                        Words: {wpmData.words.length}
                       </Badge>
 
                       <Badge className="rounded-sm" variant={"secondary"}>
-                        wpm: {wpmData[wpmData.length - 1].wpm}
+                        wpm: {wpmData.words[wpmData.words.length - 1].wpm}
                       </Badge>
 
                       <Button
@@ -91,8 +98,14 @@ const HistoryPage = () => {
                 </CardHeader>
 
                 <CardContent>
-                  <TypingSpeedLineChart wpmData={wpmData} />
+                  <TypingSpeedLineChart wpmData={wpmData.words} />
                 </CardContent>
+
+                <CardFooter>
+                  <span className="text-sm text-muted-foreground">
+                    {wpmData.testDateTime}
+                  </span>
+                </CardFooter>
               </Card>
             ))}
       </div>

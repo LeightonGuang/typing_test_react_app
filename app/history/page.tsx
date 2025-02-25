@@ -55,7 +55,7 @@ const HistoryPage = () => {
   }, []);
 
   return (
-    <section className="flex h-dvh w-dvw justify-center pt-4">
+    <section className="flex h-full w-dvw justify-center pt-4">
       <div className="m-4 flex min-w-[50rem] flex-col gap-4">
         <div className="mb-4 flex justify-between">
           <h1 className="text-3xl">Typing History</h1>

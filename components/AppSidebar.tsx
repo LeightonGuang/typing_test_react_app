@@ -1,8 +1,12 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { HistoryIconSvg, KeyboardIconSvg } from "./icons";
 import {
   Sidebar,
   SidebarMenu,
   SidebarGroup,
+  SidebarFooter,
   SidebarHeader,
   SidebarContent,
   SidebarMenuItem,
@@ -15,10 +19,21 @@ const AppSidebar = () => {
     { title: "History", href: "/history", icon: <HistoryIconSvg /> },
   ];
 
+  const [version, setVersion] = useState<string>("");
+
+  useEffect(() => {
+    fetch("/version.json")
+      .then((response) => response.json())
+      .then((data) => setVersion(data.version))
+      .catch(() => {
+        setVersion("unknown");
+      });
+  }, []);
+
   return (
     <Sidebar>
       <SidebarHeader>
-        <span className="text-xl">The Next Typer</span>
+        <h1 className="text-lg">The Next Typer</h1>
       </SidebarHeader>
 
       <SidebarContent>
@@ -37,6 +52,13 @@ const AppSidebar = () => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter>
+        <div className="flex justify-between">
+          <span className="text-sm text-gray-400">{`© ${new Date().getFullYear()} The Next Typer`}</span>
+          <span className="text-sm text-gray-400">v{version}</span>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 };

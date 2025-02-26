@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { WpmDataType } from "@/_types/WpmDataType";
 import { TypedWordsType } from "@/_types/TypedWordsType";
+import { CursorIconSvg } from "../icons";
 
 interface Props {
   activeCharIndex: number;
@@ -195,67 +196,82 @@ export const TypingAreaContent = ({
   }, [inputValue]);
 
   return (
-    <div
-      tabIndex={0}
-      className={`${isFocused ? null : "blur-sm"} m-4 flex select-none flex-wrap gap-1 overflow-hidden text-lg focus:outline-none`}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-      onClick={onInputFocus}
-    >
-      {typedWords.map(({ word, typed }, wordIndex) => {
-        const splittedWord = word.split("");
-        const splittedTypedWord = typed.split("");
+    <div className="relative flex items-center justify-center hover:cursor-text">
+      {!isFocused && (
+        <span className="absolute text-gray-200">
+          <div className="flex items-center gap-2">
+            <CursorIconSvg className="h-4 w-4" />
+            <span>Click here to continue typing</span>
+          </div>
+        </span>
+      )}
+      <div
+        tabIndex={0}
+        className={`${isFocused ? null : "blur-sm"} flex select-none flex-wrap gap-1 overflow-hidden p-4 text-lg focus:outline-none`}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onClick={onInputFocus}
+      >
+        {typedWords.map(({ word, typed }, wordIndex) => {
+          const splittedWord = word.split("");
+          const splittedTypedWord = typed.split("");
 
-        if (splittedTypedWord.length <= splittedWord.length) {
-          // if the typed word is shorter than the word
-          const splittedWordsLetters = splittedWord.map((char, charIndex) => {
-            const letter = splittedTypedWord[charIndex] || char;
-            const isCorrect =
-              splittedTypedWord[charIndex] === undefined
-                ? undefined
-                : splittedTypedWord[charIndex] === char
-                  ? true
-                  : false;
-            const isActive =
-              charIndex === activeCharIndex && wordIndex === activeWordIndex;
-
-            return { char: letter, isCorrect, isActive };
-          });
-
-          return (
-            <Word key={wordIndex} splittedWordsLetters={splittedWordsLetters} />
-          );
-        } else if (splittedTypedWord.length > splittedWord.length) {
-          // if the typed word is longer than the word
-          const splittedWordsLetters = splittedTypedWord.map(
-            (typedChar, charIndex) => {
+          if (splittedTypedWord.length <= splittedWord.length) {
+            const splittedWordsLetters = splittedWord.map((char, charIndex) => {
+              const letter = splittedTypedWord[charIndex] || char;
               const isCorrect =
                 splittedTypedWord[charIndex] === undefined
                   ? undefined
-                  : splittedWord[charIndex] === typedChar
+                  : splittedTypedWord[charIndex] === char
                     ? true
                     : false;
               const isActive =
                 charIndex === activeCharIndex && wordIndex === activeWordIndex;
 
-              return { char: typedChar, isCorrect, isActive };
-            },
-          );
+              return { char: letter, isCorrect, isActive };
+            });
 
-          return (
-            <Word key={wordIndex} splittedWordsLetters={splittedWordsLetters} />
-          );
-        }
-      })}
+            return (
+              <Word
+                key={wordIndex}
+                splittedWordsLetters={splittedWordsLetters}
+              />
+            );
+          } else if (splittedTypedWord.length > splittedWord.length) {
+            const splittedWordsLetters = splittedTypedWord.map(
+              (typedChar, charIndex) => {
+                const isCorrect =
+                  splittedTypedWord[charIndex] === undefined
+                    ? undefined
+                    : splittedWord[charIndex] === typedChar
+                      ? true
+                      : false;
+                const isActive =
+                  charIndex === activeCharIndex &&
+                  wordIndex === activeWordIndex;
 
-      <input
-        readOnly
-        className="h-0 w-0"
-        type="text"
-        value={inputValue}
-        ref={inputRef}
-        onKeyDown={handleInputKeyDown}
-      />
+                return { char: typedChar, isCorrect, isActive };
+              },
+            );
+
+            return (
+              <Word
+                key={wordIndex}
+                splittedWordsLetters={splittedWordsLetters}
+              />
+            );
+          }
+        })}
+
+        <input
+          readOnly
+          className="h-0 w-0"
+          type="text"
+          value={inputValue}
+          ref={inputRef}
+          onKeyDown={handleInputKeyDown}
+        />
+      </div>
     </div>
   );
 };

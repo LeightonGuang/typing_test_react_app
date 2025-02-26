@@ -104,10 +104,12 @@ export const TypingAreaContent = ({
       // handle backspace
       e.preventDefault();
 
+      // stop activeCharIndex from going out of bounds
       if (activeCharIndex <= 0 && activeWordIndex <= 0) return;
 
       if (e.ctrlKey) {
         if (activeCharIndex > 0) {
+          // handle ctrl + backspace when it's not the first char of the word
           setInputValue("");
           setActiveCharIndex(0);
           setTypedWords((prevTypedWords) => {
@@ -119,6 +121,7 @@ export const TypingAreaContent = ({
             return newTypedWords;
           });
         } else if (activeWordIndex > 0 && activeCharIndex === 0) {
+          // handle backspace when it's the first char of the word and not the first word
           setInputValue("");
           setActiveCharIndex(0);
           setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex - 1);
@@ -130,6 +133,7 @@ export const TypingAreaContent = ({
             };
             return newTypedWords;
           });
+          setWpmData((prevWpmData) => prevWpmData.slice(0, -1));
         }
       } else if (activeCharIndex > 0) {
         // handle normal backspace
@@ -142,8 +146,8 @@ export const TypingAreaContent = ({
           ].typed.slice(0, -1);
           return newTypedWords;
         });
-      } else if (activeWordIndex > 0 && activeCharIndex === 0) {
-        // handle backspace when it's not the first word and the first char of the word
+      } else if (activeCharIndex === 0 && activeWordIndex > 0) {
+        // handle backspace when it's the first char of the word and not the first word
         setInputValue(typedWords[activeWordIndex - 1].typed);
         setActiveWordIndex((prevActiveWordIndex) => prevActiveWordIndex - 1);
         setActiveCharIndex(typedWords[activeWordIndex - 1].typed.length);

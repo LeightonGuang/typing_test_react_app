@@ -17,7 +17,7 @@ import TypingSpeedLineChart from "../TypingSpeedLineChart/TypingSpeedLineChart";
 
 const TypingAreaBlock = () => {
   const router = useRouter();
-  const [isFocused, setIsFocused] = useState(false);
+  const [isFocused, setIsFocused] = useState(true);
   const [timer, setTimer] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
   const [wpm, setWpm] = useState(0);

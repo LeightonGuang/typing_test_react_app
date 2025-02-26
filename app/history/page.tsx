@@ -76,6 +76,10 @@ const HistoryPage = () => {
                   <div className="flex items-center justify-between">
                     <h2 className="text-2xl">Test {wpmDatas.length - index}</h2>
 
+                    <span className="text-sm text-muted-foreground">
+                      {wpmData.testDateTime}
+                    </span>
+
                     <div className="flex items-center gap-2">
                       <Badge className="rounded-sm" variant={"secondary"}>
                         Words: {wpmData.words.length}
@@ -100,12 +104,6 @@ const HistoryPage = () => {
                 <CardContent>
                   <TypingSpeedLineChart wpmData={wpmData.words} />
                 </CardContent>
-
-                <CardFooter>
-                  <span className="text-sm text-muted-foreground">
-                    {wpmData.testDateTime}
-                  </span>
-                </CardFooter>
               </Card>
             ))}
       </div>

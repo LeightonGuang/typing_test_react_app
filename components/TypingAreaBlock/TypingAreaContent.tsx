@@ -137,15 +137,15 @@ export const TypingAreaContent = ({
         }
       } else if (activeCharIndex > 0) {
         // handle normal backspace
+        setTypedWords((prev) =>
+          prev.map((word, i) =>
+            i === activeWordIndex
+              ? { ...word, typed: word.typed.slice(0, -1) }
+              : word,
+          ),
+        );
         setActiveCharIndex((prevActiveCharIndex) => prevActiveCharIndex - 1);
         setInputValue(inputValue.slice(0, -1));
-        setTypedWords((prevTypedWords) => {
-          const newTypedWords = [...prevTypedWords];
-          newTypedWords[activeWordIndex].typed = newTypedWords[
-            activeWordIndex
-          ].typed.slice(0, -1);
-          return newTypedWords;
-        });
       } else if (activeCharIndex === 0 && activeWordIndex > 0) {
         // handle backspace when it's the first char of the word and not the first word
         setInputValue(typedWords[activeWordIndex - 1].typed);

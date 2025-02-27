@@ -72,6 +72,9 @@ export const TypingAreaContent = ({
       // handle spacebar
       e.preventDefault();
 
+      // stop inputValue from being empty
+      if (inputValue.length === 0) return;
+
       // stop activeWordIndex from going out of bounds
       if (activeWordIndex === targetNumWords - 1) return;
 

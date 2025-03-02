@@ -166,10 +166,13 @@ const TypingAreaBlock = () => {
       }
 
       toast("Finished", {
-        description:
-          `Your typing speed for ${targetNumWords} words is ` +
-          calcWpm(typedLetterCount, timer / 100, numErrors).toFixed(2) +
-          " WPM",
+        description: (
+          <span className="text-foreground">
+            {`Your typing speed for ${targetNumWords} words is ` +
+              calcWpm(typedLetterCount, timer / 100, numErrors).toFixed(2) +
+              " WPM"}
+          </span>
+        ),
         action: {
           label: "History",
           onClick: () => {

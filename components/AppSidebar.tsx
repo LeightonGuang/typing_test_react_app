@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { HistoryIconSvg, KeyboardIconSvg } from "./icons";
+import { HistoryIconSvg, KeyboardIconSvg, SettingIconSvg } from "./icons";
 import {
   Sidebar,
   SidebarMenu,
@@ -12,11 +12,13 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "./ui/sidebar";
+import { Separator } from "./ui/separator";
 
 const AppSidebar = () => {
   const items: { title: string; href: string; icon?: React.ReactNode }[] = [
     { title: "Typing", href: "/", icon: <KeyboardIconSvg /> },
     { title: "History", href: "/history", icon: <HistoryIconSvg /> },
+    { title: "Settings", href: "/setting", icon: <SettingIconSvg /> },
   ];
 
   const [version, setVersion] = useState<string>("");
@@ -52,6 +54,8 @@ const AppSidebar = () => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+
+      <Separator />
 
       <SidebarFooter>
         <div className="flex justify-between">

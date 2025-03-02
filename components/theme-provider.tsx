@@ -1,11 +1,23 @@
 "use client";
 
-import * as React from "react";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
-export function ThemeProvider({
+export const ThemeProvider = ({
   children,
   ...props
-}: React.ComponentProps<typeof NextThemesProvider>) {
+}: React.ComponentProps<typeof NextThemesProvider>) => {
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    const localTheme = localStorage.getItem("theme");
+    if (!localTheme) {
+      localStorage.setItem("theme", "dark");
+      setTheme("dark");
+    } else if (localTheme) {
+      setTheme(localTheme);
+    }
+  }, []);
+
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
-}
+};

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Line,
   XAxis,
@@ -8,12 +10,20 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
+import { cssToHsl, hslToHex } from "@/utils/hslConverter";
 
 interface Props {
   wpmData: { typedWord: string; wpm: number; isCorrect: boolean }[];
 }
 
 const TypingSpeedLineChart = ({ wpmData }: Props) => {
+  const primaryHex = hslToHex(cssToHsl("--primary"));
+  const borderHex = hslToHex(cssToHsl("--border"));
+  const destructiveHex = hslToHex(cssToHsl("--destructive"));
+  const foregroundHex = hslToHex(cssToHsl("--foreground"));
+  const backgroundHex = hslToHex(cssToHsl("--background"));
+  const mutedForegroundHex = hslToHex(cssToHsl("--muted-foreground"));
+
   return (
     <div className="flex h-48 w-[50rem]">
       <ResponsiveContainer width={"100%"} height={"100%"}>
@@ -24,19 +34,21 @@ const TypingSpeedLineChart = ({ wpmData }: Props) => {
         >
           <XAxis
             dataKey={"typedWord"}
-            axisLine={{ stroke: "#ffffff" }}
+            stroke={primaryHex}
+            tick={{ fill: mutedForegroundHex }}
             strokeWidth={2}
           />
           <YAxis
             dataKey={"wpm"}
-            axisLine={{ stroke: "#ffffff" }}
+            stroke={primaryHex}
+            tick={{ fill: mutedForegroundHex }}
             strokeWidth={2}
           />
-          <CartesianGrid strokeDasharray="3 3" stroke="#666666" />
+          <CartesianGrid strokeDasharray="3 3" stroke={borderHex} />
           <Tooltip
             contentStyle={{
-              backgroundColor: "#000000",
-              border: "none",
+              backgroundColor: backgroundHex,
+              border: borderHex,
             }}
           />
           <Legend />
@@ -50,13 +62,19 @@ const TypingSpeedLineChart = ({ wpmData }: Props) => {
                   cx={cx}
                   cy={cy}
                   r={3}
-                  fill={"#7BC950"}
+                  fill={foregroundHex}
                 />
               ) : (
-                <circle cx={cx} cy={cy} r={3} fill={"#F71735"} />
+                <circle
+                  key={payload.typedWord + payload.wpm}
+                  cx={cx}
+                  cy={cy}
+                  r={3}
+                  fill={destructiveHex}
+                />
               );
             }}
-            stroke="#ffffff"
+            stroke={mutedForegroundHex}
             strokeWidth={2}
             isAnimationActive={false}
           />

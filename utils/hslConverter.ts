@@ -14,13 +14,5 @@ export const hslToHex = (hsl: string) => {
   return `#${f(0)}${f(8)}${f(4)}`;
 };
 
-export const cssToHsl = (cssClass: string) => {
-  console.log(
-    window
-      .getComputedStyle(document.documentElement)
-      .getPropertyValue(cssClass),
-  );
-  return window
-    .getComputedStyle(document.documentElement)
-    .getPropertyValue(cssClass);
-};
+export const cssToHsl = (cssClass: string) =>
+  window.getComputedStyle(document.documentElement).getPropertyValue(cssClass);

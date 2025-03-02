@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 const SettingPage = () => {
   useEffect(() => {}, []);
 
+  const localTheme = localStorage.getItem("theme");
   const { setTheme } = useTheme();
 
   const themeButtons = [
@@ -65,6 +66,7 @@ const SettingPage = () => {
                         key={button.value}
                         onClick={() => handleThemeButton(button.value)}
                         className={`w-full rounded-sm ${button.value}`}
+                        disabled={localTheme === button.value}
                       >
                         {button.label}
                       </Button>

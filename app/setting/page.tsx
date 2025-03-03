@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardFooter,
@@ -19,10 +19,14 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
 const SettingPage = () => {
-  useEffect(() => {}, []);
-
-  const localTheme = localStorage.getItem("theme");
   const { setTheme } = useTheme();
+
+  const [localTheme, setLocalTheme] = useState<string>("dark");
+
+  useEffect(() => {
+    const localStorageTheme = localStorage.getItem("theme");
+    setLocalTheme(localStorageTheme!);
+  }, []);
 
   const themeButtons = [
     { label: "Light", value: "light" },

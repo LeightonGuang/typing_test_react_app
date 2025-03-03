@@ -20,6 +20,7 @@ interface WpmDataInfoType {
 [];
 const HistoryPage = () => {
   const [wpmDatas, setWpmDatas] = useState<WpmDataInfoType[]>([]);
+  const [wpmDatasError, setWpmDatasError] = useState(false);
 
   const handleDeleteAllButton = () => {
     if (window.confirm("Are you sure you want to delete all history?")) {
@@ -48,10 +49,16 @@ const HistoryPage = () => {
 
   useEffect(() => {
     const localWpmDatas = localStorage.getItem("wpmDatas");
-    const parsedLocalDatas: WpmDataInfoType[] = JSON.parse(
-      localWpmDatas || "[]",
-    );
-    setWpmDatas(parsedLocalDatas);
+
+    try {
+      const parsedLocalDatas: WpmDataInfoType[] = JSON.parse(
+        localWpmDatas || "[]",
+      );
+      setWpmDatas(parsedLocalDatas);
+    } catch (error) {
+      console.log(error);
+      setWpmDatasError(true);
+    }
   }, []);
 
   return (
@@ -62,7 +69,9 @@ const HistoryPage = () => {
           <Button
             variant={"destructive"}
             onClick={handleDeleteAllButton}
-            disabled={wpmDatas.length === 0}
+            disabled={
+              wpmDatasError ? false : wpmDatas.length === 0 ? true : false
+            }
           >
             Delete All
           </Button>
@@ -70,42 +79,46 @@ const HistoryPage = () => {
 
         {wpmDatas.length === 0
           ? "No history"
-          : [...wpmDatas].reverse().map((wpmData, index) => (
-              <Card key={index} className="min-w-[50rem] rounded-none">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl">Test {wpmDatas.length - index}</h2>
+          : wpmDatasError
+            ? "WPM data corrupted"
+            : [...wpmDatas].reverse().map((wpmData, index) => (
+                <Card key={index} className="min-w-[50rem] rounded-none">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-2xl">
+                        Test {wpmDatas.length - index}
+                      </h2>
 
-                    <span className="text-sm text-muted-foreground">
-                      {wpmData.testDateTime}
-                    </span>
+                      <span className="text-sm text-muted-foreground">
+                        {wpmData.testDateTime}
+                      </span>
 
-                    <div className="flex items-center gap-2">
-                      <Badge className="rounded-sm" variant={"secondary"}>
-                        Words: {wpmData.words.length}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge className="rounded-sm" variant={"secondary"}>
+                          Words: {wpmData.words.length}
+                        </Badge>
 
-                      <Badge className="rounded-sm" variant={"secondary"}>
-                        wpm: {wpmData.words[wpmData.words.length - 1].wpm}
-                      </Badge>
+                        <Badge className="rounded-sm" variant={"secondary"}>
+                          wpm: {wpmData.words[wpmData.words.length - 1].wpm}
+                        </Badge>
 
-                      <Button
-                        variant={"destructive"}
-                        onClick={() => {
-                          handleDeleteButton(wpmDatas.length - index - 1);
-                        }}
-                      >
-                        Delete
-                      </Button>
+                        <Button
+                          variant={"destructive"}
+                          onClick={() => {
+                            handleDeleteButton(wpmDatas.length - index - 1);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
+                  </CardHeader>
 
-                <CardContent>
-                  <TypingSpeedLineChart wpmData={wpmData.words} />
-                </CardContent>
-              </Card>
-            ))}
+                  <CardContent>
+                    <TypingSpeedLineChart wpmData={wpmData.words} />
+                  </CardContent>
+                </Card>
+              ))}
       </div>
     </section>
   );

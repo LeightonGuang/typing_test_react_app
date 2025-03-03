@@ -207,8 +207,10 @@ export const TypingAreaContent = ({
       {!isFocused && (
         <span className="absolute text-gray-200">
           <div className="flex items-center gap-2">
-            <CursorIconSvg className="h-4 w-4" />
-            <span>Click here to continue typing</span>
+            <CursorIconSvg className="h-4 w-4 text-foreground" />
+            <span className="text-foreground">
+              Click here to continue typing
+            </span>
           </div>
         </span>
       )}

@@ -33,6 +33,10 @@ const SettingPage = () => {
     { label: "Dark", value: "dark" },
     { label: "Red Light", value: "red-light" },
     { label: "Red Dark", value: "red-dark" },
+    { label: "Blue Light", value: "blue-light" },
+    { label: "Blue Dark", value: "blue-dark" },
+    { label: "Orange Light", value: "orange-light" },
+    { label: "Orange Dark", value: "orange-dark" },
   ];
 
   const handleThemeButton = (theme: string) => {
@@ -64,7 +68,7 @@ const SettingPage = () => {
 
               <AccordionContent>
                 <div className="text-lg">
-                  <div className="flex w-full gap-2">
+                  <div className="flex w-full flex-shrink gap-2">
                     {themeButtons.map((button) => (
                       <Button
                         key={button.value}

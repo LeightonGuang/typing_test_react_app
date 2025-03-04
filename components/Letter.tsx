@@ -8,11 +8,14 @@ interface Props {
 
 const Letter = ({ char, isCorrect, isActive }: Props) => {
   return (
-    <span
-      className={`${isActive && "bg-input bg-opacity-100"} ${isCorrect === undefined && "text-muted-foreground"} ${isCorrect === true && "text-foreground"} ${isCorrect === false && "text-destructive"} `}
+    <div
+      className={`relative ${isCorrect === undefined && "text-muted-foreground"} ${isCorrect === true && "text-foreground"} ${isCorrect === false && "text-destructive"} `}
     >
+      <span
+        className={`absolute inset-0 ${isActive && "bg-input opacity-50"}`}
+      />
       {char}
-    </span>
+    </div>
   );
 };
 

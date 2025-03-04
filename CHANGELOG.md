@@ -2,6 +2,7 @@
 
 ## 1.1.3 (3-3-2025)
 
+- Fixed cursor and letter colour visibility
 - Added more colour themes
 
 ## 1.1.2 (26-2-2025)

@@ -32,8 +32,6 @@ export const TypingAreaHeader = ({
   });
 
   const handleToggleChange = (numWords: number) => {
-    console.log("toggle change ", numWords);
-
     setToggleOn({
       25: 25 === numWords,
       50: 50 === numWords,

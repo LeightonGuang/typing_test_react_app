@@ -16,14 +16,12 @@ const Letter = ({ char, isCorrect, isActive }: Props) => {
     if (localSettings) setCaret(JSON.parse(localSettings).caret);
   }, []);
 
-  // TODO blinking caret
-
   return (
     <div
       className={`relative ${isCorrect === undefined && "text-muted-foreground"} ${isCorrect === true && "text-foreground"} ${isCorrect === false && "text-destructive"} `}
     >
       <span
-        className={`${isActive ? "absolute" : "hidden"} ${caret === "block" && "inset-0 bg-input opacity-50"} ${caret === "underline" && "h-full w-full border-b-2 border-input"} ${caret === "bar" && "h-full w-full border-l border-input"}`}
+        className={`${isActive ? "absolute" : "hidden"} ${caret === "block" && "inset-0 bg-input opacity-50"} ${caret === "bar" && "h-full w-full border-l-2 border-foreground"} ${caret === "underline" && "h-full w-full border-b-2 border-foreground"}`}
       />
       {char}
     </div>

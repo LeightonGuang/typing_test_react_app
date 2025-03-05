@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import AppSidebar from "@/components/AppSidebar";
 import AdBlockDetector from "@/components/AdBlockDetector";
 import { ThemeProvider } from "@/components/theme-provider";
+import LocalStorageChecker from "@/components/LocalstorageChecker";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AdBlockDetector>
+          <LocalStorageChecker />
           <ThemeProvider
             attribute={"class"}
             defaultTheme="dark"

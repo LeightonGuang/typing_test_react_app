@@ -19,14 +19,17 @@ import { Button } from "@/components/ui/button";
 import { SettingIconSvg } from "@/components/icons";
 import { SettingsType } from "@/_types/SettingsType";
 
-const themeButtons = [
+const lightThemes = [
   { label: "Light", value: "light" },
-  { label: "Dark", value: "dark" },
   { label: "Red Light", value: "red-light" },
-  { label: "Red Dark", value: "red-dark" },
   { label: "Blue Light", value: "blue-light" },
-  { label: "Blue Dark", value: "blue-dark" },
   { label: "Orange Light", value: "orange-light" },
+];
+
+const darkThemes = [
+  { label: "Dark", value: "dark" },
+  { label: "Red Dark", value: "red-dark" },
+  { label: "Blue Dark", value: "blue-dark" },
   { label: "Orange Dark", value: "orange-dark" },
 ];
 
@@ -106,23 +109,38 @@ const SettingPage = () => {
           >
             <AccordionItem value="theme" defaultChecked={true}>
               <AccordionTrigger>
-                <span className="text-xl">Theme</span>
+                <span className="text-xl">Themes</span>
               </AccordionTrigger>
 
               <AccordionContent>
                 <div className="text-lg">
                   {/* TODO: stack same colours in the same column */}
                   <div className="flex w-full gap-2">
-                    {themeButtons.map((button) => (
-                      <Button
-                        key={button.value}
-                        onClick={() => handleThemeButton(button.value)}
-                        className={`w-full rounded-sm ${button.value}`}
-                        disabled={localTheme === button.value}
-                      >
-                        {button.label}
-                      </Button>
-                    ))}
+                    {lightThemes.map((lightTheme, index) => {
+                      const darkTheme = darkThemes[index];
+
+                      return (
+                        <div className="flex w-full flex-col gap-2">
+                          <Button
+                            key={lightTheme.value}
+                            onClick={() => handleThemeButton(lightTheme.value)}
+                            className={`w-full rounded-sm ${lightTheme.value}`}
+                            disabled={localTheme === lightTheme.value}
+                          >
+                            {lightTheme.label}
+                          </Button>
+
+                          <Button
+                            key={darkTheme.value}
+                            onClick={() => handleThemeButton(darkTheme.value)}
+                            className={`w-full rounded-sm ${darkTheme.value}`}
+                            disabled={localTheme === darkTheme.value}
+                          >
+                            {darkTheme.label}
+                          </Button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </AccordionContent>

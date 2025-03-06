@@ -10,35 +10,86 @@ import {
 import {
   Accordion,
   AccordionItem,
-  AccordionContent,
   AccordionTrigger,
+  AccordionContent,
 } from "@/components/ui/accordion";
-
-import { SettingIconSvg } from "@/components/icons";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
+import { SettingIconSvg } from "@/components/icons";
+import { SettingsType } from "@/_types/SettingsType";
+
+const lightThemes = [
+  { label: "Light", value: "light" },
+  { label: "Red Light", value: "red-light" },
+  { label: "Blue Light", value: "blue-light" },
+  { label: "Orange Light", value: "orange-light" },
+];
+
+const darkThemes = [
+  { label: "Dark", value: "dark" },
+  { label: "Red Dark", value: "red-dark" },
+  { label: "Blue Dark", value: "blue-dark" },
+  { label: "Orange Dark", value: "orange-dark" },
+];
+
 const SettingPage = () => {
   const { setTheme } = useTheme();
-
+  const [versionNumber, setVersionNumber] = useState<string>("");
+  const [localSettings, setLocalSettings] = useState<SettingsType>(
+    {} as SettingsType,
+  );
   const [localTheme, setLocalTheme] = useState<string>("dark");
-
-  useEffect(() => {
-    const localStorageTheme = localStorage.getItem("theme");
-    setLocalTheme(localStorageTheme!);
-  }, []);
-
-  const themeButtons = [
-    { label: "Light", value: "light" },
-    { label: "Dark", value: "dark" },
-    { label: "Red Light", value: "red-light" },
-    { label: "Red Dark", value: "red-dark" },
-  ];
 
   const handleThemeButton = (theme: string) => {
     setTheme(theme);
     window.location.reload();
   };
+
+  const handleCursorButton = (caret: "bar" | "block" | "underline") => {
+    const localSettings = localStorage.getItem("settings");
+
+    if (localSettings) {
+      const updatedSettings: SettingsType = JSON.parse(localSettings);
+
+      if (caret === "block" || caret === "underline" || caret === "bar") {
+        updatedSettings.caret = caret;
+        localStorage.setItem("settings", JSON.stringify(updatedSettings));
+        setLocalSettings(updatedSettings);
+        // TODO toast notification for caret change
+      } else {
+        console.error("Invalid caret value");
+      }
+    } else if (!localSettings) {
+      const newSettings: SettingsType = {
+        version: versionNumber,
+        isShowChart: true,
+        caret: "block",
+      };
+
+      localStorage.setItem("settings", JSON.stringify(newSettings));
+    }
+  };
+
+  useEffect(() => {
+    const getVersion = async () => {
+      try {
+        const response = await fetch("/version.json");
+        const { version: localVersion } = await response.json();
+        setVersionNumber(localVersion);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getVersion();
+
+    const localStorageTheme = localStorage.getItem("theme");
+    if (localStorageTheme) setLocalTheme(localStorageTheme);
+
+    const localSettings = localStorage.getItem("settings");
+    if (localSettings) setLocalSettings(JSON.parse(localSettings));
+  }, []);
 
   return (
     <div className="flex h-dvh w-dvw items-center justify-center">
@@ -52,29 +103,86 @@ const SettingPage = () => {
 
         <CardContent>
           <Accordion
-            type="single"
-            collapsible
+            type="multiple"
             className="w-full"
-            defaultValue="theme"
+            defaultValue={["theme", "caret"]}
           >
             <AccordionItem value="theme" defaultChecked={true}>
               <AccordionTrigger>
-                <span className="text-xl">Theme</span>
+                <span className="text-xl">Themes</span>
+              </AccordionTrigger>
+
+              <AccordionContent>
+                <div className="text-lg">
+                  {/* TODO: stack same colours in the same column */}
+                  <div className="flex w-full gap-2">
+                    {lightThemes.map((lightTheme, index) => {
+                      const darkTheme = darkThemes[index];
+
+                      return (
+                        <div className="flex w-full flex-col gap-2">
+                          <Button
+                            key={lightTheme.value}
+                            onClick={() => handleThemeButton(lightTheme.value)}
+                            className={`w-full rounded-sm ${lightTheme.value}`}
+                            disabled={localTheme === lightTheme.value}
+                          >
+                            {lightTheme.label}
+                          </Button>
+
+                          <Button
+                            key={darkTheme.value}
+                            onClick={() => handleThemeButton(darkTheme.value)}
+                            className={`w-full rounded-sm ${darkTheme.value}`}
+                            disabled={localTheme === darkTheme.value}
+                          >
+                            {darkTheme.label}
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="caret">
+              <AccordionTrigger>
+                <span className="text-xl">Caret</span>
               </AccordionTrigger>
 
               <AccordionContent>
                 <div className="text-lg">
                   <div className="flex w-full gap-2">
-                    {themeButtons.map((button) => (
-                      <Button
-                        key={button.value}
-                        onClick={() => handleThemeButton(button.value)}
-                        className={`w-full rounded-sm ${button.value}`}
-                        disabled={localTheme === button.value}
-                      >
-                        {button.label}
-                      </Button>
-                    ))}
+                    <Button
+                      className="rounded-sm"
+                      onClick={() => {
+                        handleCursorButton("block");
+                      }}
+                      disabled={localSettings.caret === "block"}
+                    >
+                      {"Block ( █ )"}
+                    </Button>
+
+                    <Button
+                      className="rounded-sm"
+                      onClick={() => {
+                        handleCursorButton("bar");
+                      }}
+                      disabled={localSettings.caret === "bar"}
+                    >
+                      {"Bar ( | )"}
+                    </Button>
+
+                    <Button
+                      className="rounded-sm"
+                      onClick={() => {
+                        handleCursorButton("underline");
+                      }}
+                      disabled={localSettings.caret === "underline"}
+                    >
+                      {"Underline ( _ )"}
+                    </Button>
                   </div>
                 </div>
               </AccordionContent>

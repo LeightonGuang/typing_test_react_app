@@ -3,9 +3,16 @@ const calcWpm = (
   timeInSeconds: number,
   errors: number,
 ) => {
-  const rawWpm = totalLettersTyped / 5 / (timeInSeconds / 60);
+  const wordLength = 5;
+  const secondsInMinute = 60;
 
-  const netWpm = rawWpm - errors / (timeInSeconds / 60);
+  const totalWordsTyped = totalLettersTyped / wordLength;
+
+  const rawWpm = totalWordsTyped / (timeInSeconds / secondsInMinute);
+
+  const errorRate = errors / totalWordsTyped;
+
+  const netWpm = rawWpm - rawWpm * errorRate;
 
   return netWpm;
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
@@ -7,10 +8,10 @@ import { TypingAreaHeader } from "./TypingAreaHeader";
 import { TypingAreaContent } from "./TypingAreaContent";
 import { Card, CardContent, CardFooter } from "../ui/card";
 
-import { toast } from "sonner";
 import calcWpm from "@/utils/calcWpm";
 import { useRouter } from "next/navigation";
 import { WpmDataType } from "@/_types/WpmDataType";
+import { SettingsType } from "@/_types/SettingsType";
 import { testWordList } from "@/_assets/testWordList";
 import { TypedWordsType } from "@/_types/TypedWordsType";
 import TypingSpeedLineChart from "../TypingSpeedLineChart/TypingSpeedLineChart";
@@ -31,6 +32,7 @@ const TypingAreaBlock = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [typedWords, setTypedWords] = useState<TypedWordsType>([]);
   const [typedLetterCount, setTypedLetterCount] = useState(0);
+  const [settings, setSettings] = useState<SettingsType>({} as SettingsType);
 
   const generateWords = (numWords: number) => {
     const randomWordsList: string[] = Array.from({ length: numWords }).map(
@@ -55,11 +57,21 @@ const TypingAreaBlock = () => {
     setNumErrors(0);
   };
 
-  // generate initial words
   useEffect(() => {
+    // generate initial words
     const randomWordsList = generateWords(targetNumWords);
     setGeneratedWords(randomWordsList);
-    setIsShowChart(localStorage.getItem("isShowChart") === "true");
+
+    const localSettings = localStorage.getItem("settings");
+
+    if (localSettings) {
+      const parsedSettings = JSON.parse(localSettings);
+      setSettings(parsedSettings);
+
+      setIsShowChart(parsedSettings.isShowChart);
+    } else if (!localSettings) {
+      localStorage.setItem("settings", JSON.stringify({ isShowChart: true }));
+    }
   }, []);
 
   // start timer
@@ -243,8 +255,15 @@ const TypingAreaBlock = () => {
                   className="w-min rounded-sm"
                   variant={"secondary"}
                   onClick={() => {
+                    const updatedSettings = { ...settings };
+
+                    updatedSettings.isShowChart = !isShowChart;
                     setIsShowChart(!isShowChart);
-                    localStorage.setItem("isShowChart", String(!isShowChart));
+
+                    localStorage.setItem(
+                      "settings",
+                      JSON.stringify(updatedSettings),
+                    );
                   }}
                 >
                   {isShowChart ? "Hide Chart" : "Show Chart"}

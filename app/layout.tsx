@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import AppSidebar from "@/components/AppSidebar";
 import AdBlockDetector from "@/components/AdBlockDetector";
 import { ThemeProvider } from "@/components/theme-provider";
-import LocalStorageChecker from "@/components/LocalstorageChecker";
+import LocalStorageChecker from "@/components/LocalStorageChecker";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });

@@ -7,7 +7,7 @@ const defaultSettings: SettingsType = {
 };
 
 import { SettingsType } from "@/_types/SettingsType";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const LocalStorageChecker = () => {
   useEffect(() => {
@@ -21,25 +21,20 @@ const LocalStorageChecker = () => {
         if (localSettings) {
           const parsedLocalSettings = JSON.parse(localSettings);
           const localSettingsKeys = Object.keys(parsedLocalSettings);
-          const defaultSettingsKeys = Object.keys(defaultSettings);
-
-          // TODO check each key in the object
-
-          const sortedLocalKeys = [...localSettingsKeys].sort();
-          console.log(sortedLocalKeys);
-          const sortedDefaultKeys = [...defaultSettingsKeys].sort();
-          console.log(sortedDefaultKeys);
+          const defaultSettingsKeys = Object.keys(defaultSettings) as Array<
+            keyof SettingsType
+          >;
 
           // if the keys matches
           if (
-            sortedLocalKeys.length === sortedDefaultKeys.length &&
-            sortedLocalKeys.every(
-              (value, index) => value === sortedDefaultKeys[index],
+            localSettingsKeys.length === defaultSettingsKeys.length &&
+            localSettingsKeys.every(
+              (value, index) => value === defaultSettingsKeys[index],
             )
           ) {
             const updatedSettings = { ...parsedLocalSettings };
 
-            sortedDefaultKeys.forEach((defaultKey) => {
+            defaultSettingsKeys.forEach((defaultKey) => {
               if (
                 parsedLocalSettings[defaultKey as keyof SettingsType] === "" ||
                 parsedLocalSettings[defaultKey as keyof SettingsType] ===
@@ -56,8 +51,30 @@ const LocalStorageChecker = () => {
             });
 
             localStorage.setItem("settings", JSON.stringify(updatedSettings));
-          } else if (sortedLocalKeys !== sortedDefaultKeys) {
-            // when keys don't match
+          } else if (
+            !(
+              localSettingsKeys.length === defaultSettingsKeys.length &&
+              localSettingsKeys.every(
+                (value, index) => value === defaultSettingsKeys[index],
+              )
+            )
+          ) {
+            // mismatching keys
+            const updatedSettings: SettingsType = { ...defaultSettings };
+
+            defaultSettingsKeys.forEach((defaultKey: keyof SettingsType) => {
+              const localSettingValue = parsedLocalSettings[defaultKey];
+              const isValidValue = (value: any) =>
+                value !== "" && value !== null && value !== undefined;
+
+              if (isValidValue(localSettingValue)) {
+                // @ts-ignore
+                updatedSettings[defaultKey] =
+                  localSettingValue as SettingsType[typeof defaultKey];
+              }
+            });
+
+            localStorage.setItem("settings", JSON.stringify(updatedSettings));
           }
         } else if (!localSettings) {
           localStorage.setItem("settings", JSON.stringify(defaultSettings));

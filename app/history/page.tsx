@@ -62,9 +62,9 @@ const HistoryPage = () => {
   }, []);
 
   return (
-    <section className="flex h-full w-dvw justify-center pt-4">
-      <div className="m-4 flex min-w-[50rem] flex-col gap-4">
-        <div className="mb-4 flex justify-between">
+    <section className="flex max-h-dvh w-full justify-center pt-4">
+      <div className="m-4 flex flex-col items-center gap-4">
+        <div className="mb-4 flex w-[50rem] justify-between">
           <h1 className="text-3xl">Typing History</h1>
           <Button
             variant={"destructive"}
@@ -77,48 +77,55 @@ const HistoryPage = () => {
           </Button>
         </div>
 
-        {wpmDatas.length === 0
-          ? "No history"
-          : wpmDatasError
-            ? "WPM data corrupted"
-            : [...wpmDatas].reverse().map((wpmData, index) => (
-                <Card key={index} className="min-w-[50rem] rounded-none">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-2xl">
-                        Test {wpmDatas.length - index}
-                      </h2>
+        <div className="flex h-full snap-y snap-mandatory flex-col items-center gap-4 overflow-y-auto">
+          {wpmDatas.length === 0
+            ? "No history"
+            : wpmDatasError
+              ? "WPM data corrupted"
+              : [...wpmDatas].reverse().map((wpmData, index) => (
+                  <Card
+                    key={index}
+                    className="mx-8 flex h-[calc(50%-1rem)] w-[50rem] snap-start flex-col scroll-smooth rounded-none"
+                  >
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-2xl">
+                          Test {wpmDatas.length - index}
+                        </h2>
 
-                      <span className="text-sm text-muted-foreground">
-                        {wpmData.testDateTime}
-                      </span>
+                        <span className="text-sm text-muted-foreground">
+                          {wpmData.testDateTime}
+                        </span>
 
-                      <div className="flex items-center gap-2">
-                        <Badge className="rounded-sm" variant={"secondary"}>
-                          Words: {wpmData.words.length}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge className="rounded-sm" variant={"secondary"}>
+                            Words: {wpmData.words.length}
+                          </Badge>
 
-                        <Badge className="rounded-sm" variant={"secondary"}>
-                          wpm: {wpmData.words[wpmData.words.length - 1].wpm}
-                        </Badge>
+                          <Badge className="rounded-sm" variant={"secondary"}>
+                            wpm: {wpmData.words[wpmData.words.length - 1].wpm}
+                          </Badge>
 
-                        <Button
-                          variant={"destructive"}
-                          onClick={() => {
-                            handleDeleteButton(wpmDatas.length - index - 1);
-                          }}
-                        >
-                          Delete
-                        </Button>
+                          <Button
+                            variant={"destructive"}
+                            onClick={() => {
+                              handleDeleteButton(wpmDatas.length - index - 1);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
+                    </CardHeader>
 
-                  <CardContent>
-                    <TypingSpeedLineChart wpmData={wpmData.words} />
-                  </CardContent>
-                </Card>
-              ))}
+                    <CardContent className="h-dvh">
+                      <div className="flex h-full w-full items-center justify-center">
+                        <TypingSpeedLineChart wpmData={wpmData.words} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+        </div>
       </div>
     </section>
   );

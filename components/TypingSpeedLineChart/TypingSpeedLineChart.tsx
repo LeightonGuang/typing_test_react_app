@@ -25,62 +25,59 @@ const TypingSpeedLineChart = ({ wpmData }: Props) => {
   const mutedForegroundHex = hslToHex(cssToHsl("--muted-foreground"));
 
   return (
-    <div className="flex h-48 w-[50rem]">
-      <ResponsiveContainer width={"100%"} height={"100%"}>
-        <LineChart
-          data={wpmData}
-          width={768}
-          margin={{ top: 16, right: 32, left: 16, bottom: 4 }}
-        >
-          <XAxis
-            dataKey={"typedWord"}
-            stroke={primaryHex}
-            tick={{ fill: mutedForegroundHex }}
-            strokeWidth={2}
-          />
-          <YAxis
-            dataKey={"wpm"}
-            stroke={primaryHex}
-            tick={{ fill: mutedForegroundHex }}
-            strokeWidth={2}
-          />
-          <CartesianGrid strokeDasharray="3 3" stroke={borderHex} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: backgroundHex,
-              border: borderHex,
-            }}
-          />
-          <Legend />
-          <Line
-            type={"monotone"}
-            dataKey={"wpm"}
-            dot={({ cx, cy, payload }) => {
-              return payload.isCorrect ? (
-                <circle
-                  key={payload.typedWord + payload.wpm}
-                  cx={cx}
-                  cy={cy}
-                  r={3}
-                  fill={foregroundHex}
-                />
-              ) : (
-                <circle
-                  key={payload.typedWord + payload.wpm}
-                  cx={cx}
-                  cy={cy}
-                  r={3}
-                  fill={destructiveHex}
-                />
-              );
-            }}
-            stroke={mutedForegroundHex}
-            strokeWidth={2}
-            isAnimationActive={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    <ResponsiveContainer width={"100%"} height={"100%"}>
+      <LineChart
+        data={wpmData}
+        margin={{ top: 16, right: 32, left: 16, bottom: 4 }}
+      >
+        <XAxis
+          dataKey={"typedWord"}
+          stroke={primaryHex}
+          tick={{ fill: mutedForegroundHex }}
+          strokeWidth={2}
+        />
+        <YAxis
+          dataKey={"wpm"}
+          stroke={primaryHex}
+          tick={{ fill: mutedForegroundHex }}
+          strokeWidth={2}
+        />
+        <CartesianGrid strokeDasharray="3 3" stroke={borderHex} />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: backgroundHex,
+            border: borderHex,
+          }}
+        />
+        <Legend />
+        <Line
+          type={"monotone"}
+          dataKey={"wpm"}
+          dot={({ cx, cy, payload }) => {
+            return payload.isCorrect ? (
+              <circle
+                key={payload.typedWord + payload.wpm}
+                cx={cx}
+                cy={cy}
+                r={3}
+                fill={foregroundHex}
+              />
+            ) : (
+              <circle
+                key={payload.typedWord + payload.wpm}
+                cx={cx}
+                cy={cy}
+                r={3}
+                fill={destructiveHex}
+              />
+            );
+          }}
+          stroke={mutedForegroundHex}
+          strokeWidth={2}
+          isAnimationActive={false}
+        />
+      </LineChart>
+    </ResponsiveContainer>
   );
 };
 

@@ -284,3 +284,45 @@ img {
     @apply bg-background text-foreground;
   }
 }
+
+@font-face {
+  font-family: "DM Mono";
+  src: url("../public/fonts/DMMono-Light.ttf");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "DM Mono";
+  src: url("../public/fonts/DMMono-LightItalic.ttf");
+  font-weight: 200;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "DM Mono";
+  src: url("../public/fonts/DMMono-Regular.ttf");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "DM Mono";
+  src: url("../public/fonts/DMMono-Italic.ttf");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "DM Mono";
+  src: url("../public/fonts/DMMono-Medium.ttf");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "DM Mono";
+  src: url("../public/fonts/DMMono-MediumItalic.ttf");
+  font-weight: 500;
+  font-style: italic;
+}

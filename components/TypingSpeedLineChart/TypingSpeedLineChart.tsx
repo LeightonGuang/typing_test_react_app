@@ -28,7 +28,7 @@ const TypingSpeedLineChart = ({ wpmData }: Props) => {
     <ResponsiveContainer width={"100%"} height={"100%"}>
       <LineChart
         data={wpmData}
-        margin={{ top: 16, right: 32, left: 16, bottom: 4 }}
+        margin={{ top: 24, right: 0, left: -20, bottom: -10 }}
       >
         <XAxis
           dataKey={"typedWord"}

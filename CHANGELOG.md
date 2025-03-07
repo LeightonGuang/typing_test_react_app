@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.1
+
+- Added DM Mono font family to improve readability in the typing area.
+
 ## 1.2.0 (6-3-2025)
 
 **New Features & Improvements**

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "version": "node ./scripts/updateVersion.js $npm_package_version && npm version $npm_package_version"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

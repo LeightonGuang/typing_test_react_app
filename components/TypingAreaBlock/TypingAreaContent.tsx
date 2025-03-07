@@ -214,9 +214,10 @@ export const TypingAreaContent = ({
           </div>
         </span>
       )}
+
       <div
         tabIndex={0}
-        className={`${isFocused ? null : "blur-sm"} flex select-none flex-wrap gap-1 overflow-hidden p-4 text-lg focus:outline-none`}
+        className={`${isFocused ? null : "blur-sm"} flex select-none flex-wrap gap-x-2 overflow-hidden p-4 text-lg focus:outline-none`}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onClick={onInputFocus}

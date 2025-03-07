@@ -1,7 +1,11 @@
 # Change Log
 
-## 1.2.1
+## 1.2.1 (7-3-2025)
 
+**Improvements**
+
+- Redesigned Typing History Page
+  - Implemented scroll snapping for each charts. Only 2 charts will show per scroll.
 - Added DM Mono font family to improve readability in the typing area.
 
 ## 1.2.0 (6-3-2025)

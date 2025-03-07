@@ -197,7 +197,7 @@ const TypingAreaBlock = () => {
 
   return (
     <section>
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex max-h-dvh flex-col items-center gap-4 overflow-y-hidden">
         <Card className="w-[50rem] rounded-none">
           <TypingAreaHeader
             timer={timer}
@@ -276,7 +276,7 @@ const TypingAreaBlock = () => {
         {isShowChart && (
           <div>
             <Card className="w-min rounded-none">
-              <CardContent className="p-0">
+              <CardContent className="flex h-[15rem] w-[50rem]">
                 <TypingSpeedLineChart wpmData={wpmData} />
               </CardContent>
             </Card>

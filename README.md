@@ -14,4 +14,6 @@
 
 ## About
 
+![Home Page Screenshot](_assets/screenshots/homePage.png)
+
 This project is a revamped version of an existing [typing test website](https://github.com/LeightonGuang/typing_test). Previously, I built the typing test website using vanilla HTML, CSS and Javascript. The goal of making this new version is to improve on the previous project by using Next.js, Typescript, TailwindCSS and the new Recharts package for making line charts.

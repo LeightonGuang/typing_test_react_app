@@ -46,7 +46,7 @@ const TypingSpeedLineChart = ({ wpmData }: Props) => {
         <Tooltip
           contentStyle={{
             backgroundColor: backgroundHex,
-            border: borderHex,
+            border: `1px solid ${borderHex}`,
           }}
         />
         <Legend />

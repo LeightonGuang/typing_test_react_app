@@ -58,9 +58,9 @@ const AppSidebar = () => {
       <Separator />
 
       <SidebarFooter>
-        <div className="flex justify-between">
-          <span className="text-sm text-gray-400">{`© ${new Date().getFullYear()} The Next Typer`}</span>
-          <span className="text-sm text-gray-400">v{version}</span>
+        <div className="flex justify-between text-muted-foreground">
+          <span className="text-sm">{`© ${new Date().getFullYear()} The Next Typer`}</span>
+          <span className="text-sm">v{version}</span>
         </div>
       </SidebarFooter>
     </Sidebar>

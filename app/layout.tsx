@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "The Next Typer",
-  description: "A revamped version of an existing typing test website",
+  description: `Test your typing speed and accuracy with The Next Typer! Track your WPM, see your errors, and improve your skills with insightful charts.`,
 };
 
 export default function RootLayout({

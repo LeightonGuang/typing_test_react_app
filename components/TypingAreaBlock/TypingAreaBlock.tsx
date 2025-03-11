@@ -12,7 +12,7 @@ import calcWpm from "@/utils/calcWpm";
 import { useRouter } from "next/navigation";
 import { WpmDataType } from "@/_types/WpmDataType";
 import { SettingsType } from "@/_types/SettingsType";
-import { testWordList } from "@/_assets/testWordList";
+import { generateWords } from "@/utils/generateWords";
 import { TypedWordsType } from "@/_types/TypedWordsType";
 import TypingSpeedLineChart from "../TypingSpeedLineChart/TypingSpeedLineChart";
 
@@ -33,16 +33,6 @@ const TypingAreaBlock = () => {
   const [typedWords, setTypedWords] = useState<TypedWordsType>([]);
   const [typedLetterCount, setTypedLetterCount] = useState(0);
   const [settings, setSettings] = useState<SettingsType>({} as SettingsType);
-
-  const generateWords = (numWords: number) => {
-    const randomWordsList: string[] = Array.from({ length: numWords }).map(
-      () => {
-        return testWordList[Math.floor(Math.random() * testWordList.length)];
-      },
-    );
-
-    return randomWordsList;
-  };
 
   const resetTypingArea = () => {
     setActiveCharIndex(0);

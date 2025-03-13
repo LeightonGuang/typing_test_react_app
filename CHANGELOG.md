@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.2.2 (13-3-2025)
+
+**Improvements**
+
+- Added meta tag for Google Site Verification.
+- Fixed sidebar footer text not using theme colour.
+- Fixed Recharts tooltip border colour.
+
 ## 1.2.1 (7-3-2025)
 
 **Improvements**

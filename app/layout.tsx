@@ -23,6 +23,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="google-adsense-account" content="ca-pub-4819979435098701" />
+      </head>
+
       <body className={inter.className}>
         <AdBlockDetector>
           <LocalStorageChecker />

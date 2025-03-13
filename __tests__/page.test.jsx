@@ -1,8 +1,9 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
-import TypingAreaBlock from "../components/TypingAreaBlock/TypingAreaBlock";
+import { useRouter } from "next/navigation";
 import { generateWords } from "@/utils/generateWords";
 import { testWordList } from "@/_assets/testWordList";
+import { render, screen } from "@testing-library/react";
+import TypingAreaBlock from "../components/TypingAreaBlock/TypingAreaBlock";
 
 describe("GenerateWords function", () => {
   it("Generates 0 words", () => {
@@ -37,5 +38,24 @@ describe("GenerateWords function", () => {
   it("Generates words as strings", () => {
     const generatedWords = generateWords(10);
     expect(generatedWords.every((word) => typeof word === "string")).toBe(true);
+  });
+});
+
+jest.mock("next/navigation", () => ({
+  useRouter: jest.fn(),
+}));
+
+describe("Home Page", () => {
+  useRouter.mockImplementation(() => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    pathname: "/",
+    query: {},
+    asPath: "/",
+  }));
+
+  it("Renders TypingAreaBlock without errors", () => {
+    render(<TypingAreaBlock />);
   });
 });

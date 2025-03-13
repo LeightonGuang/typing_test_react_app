@@ -29,6 +29,11 @@ export default function RootLayout({
           name="google-site-verification"
           content="95OV8Owevm86TYyOdpCFyl20wkad0IJEMBhShITHkEM"
         />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4819979435098701"
+          crossOrigin="anonymous"
+        />
       </head>
 
       <body className={inter.className}>
